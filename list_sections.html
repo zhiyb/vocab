@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.2.1.min.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+<link rel="stylesheet" href="theme.css">
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+</head>
+
+<body>
+
+<div class="container theme-showcase" role="main">
+
+<table class="table table-bordered">
+    <thead><tr><th class="fit">#</th><th class="fit">Name</th><th>Operations</th></tr></thead>
+    <tbody id="list"></tbody>
+</table>
+
+<script>
+function refresh() {
+    $.getJSON("get/section_list.php", function(res) {
+        var html = '';
+        for (i in res) {
+            var obj = res[i];
+            var id = obj['id'];
+            var name = obj['name'];
+            html = html.concat('<tr><th class="fit">' + id + '</th><td class="fit">' + name + '</td><td>' +
+                '<button class="btn btn-sm btn-warning btn_edit" secid=' + id + ' type="button">' +
+                '<span class="glyphicon glyphicon-pencil"></span></button>' +
+                '<button class="btn btn-sm btn-danger btn_rm" secid=' + id + ' type="button">' +
+                '<span class="glyphicon glyphicon-remove"></span></button></td></tr>');
+        }
+        html = html.concat('<tr><th>New?</th>' +
+            '<td><input type="text" name="name"></td>' +
+            '<td><button class="btn btn-sm btn-success" id="add" type="button">' +
+            '<span class="glyphicon glyphicon-plus"></span></button></td></tr>');
+        $('#list').html(html);
+    });
+}
+
+$('#list').on('click', '#add', function() {
+    var name = $('#list input').val();
+    if (name === "")
+        return;
+    $.post('set/new_section.php', 'name=' + name, function() {refresh();});
+});
+
+$('#list').on('click', '.btn_rm', function() {
+    id = $(this).closest('tr').children('th').first().text();
+    if (id === "")
+        return;
+    if (confirm('Remove section #' + id + '?'))
+        $.post('set/remove_section.php', 'id=' + id, function() {refresh();});
+});
+
+$('#list').on('click', '.btn_edit', function() {
+    id = $(this).attr('secid');
+    $.getJSON("get/section.php?id=" + id, function(obj) {
+        $('#edit_name').val(obj['name']);
+        $('#edit_style').html(jsonedit('style', obj['style']));
+        $('#edit_weight').html(jsonedit('weight', obj['weight']));
+    });
+    $('#edit_id').text('Edit section #' + id);
+    $('#edit').show();
+});
+
+refresh();
+</script>
+
+<p></p>
+<div class="panel panel-warning" id="edit" hidden>
+    <div class="panel-heading">
+        <h3 class="panel-title" id="edit_id">Edit section #</h3>
+    </div>
+    <div class="panel-body">
+        <table class="table table-bordered"><tbody>
+            <tr><th class="fit">Name</th><td>
+                <input type="text" id="edit_name" size="40" maxlength="256">
+            </td></tr>
+            <tr><th class="fit">Style</th><td>
+                <table class="table table-bordered jsonedit">
+                    <tbody id="edit_style"></tbody>
+                </table>
+            </td></tr>
+            <tr><th class="fit">Weight</th><td>
+                <table class="table table-bordered jsonedit">
+                    <tbody id="edit_weight"></tbody>
+                </table>
+            </td></tr>
+        </tbody></table>
+    </div>
+    <button class="btn btn-primary" id="save">Save</button>
+</div>
+
+<script>
+function jsonedit(type, json) {
+    if (json === "")
+        return '';
+    var obj = JSON.parse(json);
+    var html = '';
+    for (field in obj)
+        html = html.concat(jsonfield(field, obj[field], true));
+    return html.concat(jsonadd());
+}
+
+function jsonfield(field, value, tr) {
+    var html = '<th class="fit"><input type="text" size="10" maxlength="32" id="field" value="', field,
+      '"></th></td><td><input type="text" size="60" id="value" value="', value,
+      '"></td><td><button class="btn btn-sm btn-danger rm"><span class="glyphicon glyphicon-remove"></span></button></td>';
+    if (tr)
+        return '<tr>' + html + '</tr>';
+    return html;
+}
+
+function jsonadd() {
+    return '<tr><th class="fit">' +
+        '<input type="text" size="10" maxlength="32" id="field"></th>' +
+        '<td><input type="text" size="60" id="value"></td>' +
+        '<td><button class="btn btn-sm btn-success add">' +
+        '<span class="glyphicon glyphicon-plus"></span></button></td></tr>';
+}
+
+$('.jsonedit').on('click', '.add', function() {
+    var tr = $(this).closest('tr');
+    var field = tr.find('#field').val();
+    var value = tr.find('#value').val();
+    if (field === "" || value === "")
+        return;
+    tr.html(jsonfield(field, value, false));
+    tr.parent().append(jsonadd());
+});
+
+$('.jsonedit').on('click', '.rm', function() {
+    $(this).closest('tr').remove();
+});
+
+function jsonobj(table) {
+    var obj = {};
+    $(table).find("tr").each(function() {
+        var field = $(this).children("th").text();
+        var value = $(this).children("td").first().text();
+        if (field !== "" && value !== "")
+            obj[field] = value;
+    });
+    return obj;
+}
+
+$('#save').click(function() {
+    var obj = {};
+    obj['id'] = id;
+    obj['name'] = $('#edit_name').val();
+    obj['style'] = JSON.stringify(jsonobj($('#edit_style')));
+    obj['weight'] = JSON.stringify(jsonobj($('#edit_weight')));
+    $.post("set/section.php", JSON.stringify(obj), function(res) {
+        if (res !== 'OK')
+            alert("Save unsuccessful");
+        else {
+            alert("Save complete");
+            refresh();
+        }
+    });
+});
+</script>
+
+</div>
+
+</body>
+</html>

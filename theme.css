@@ -1,0 +1,36 @@
+body {
+  padding-top: 30px;
+  padding-bottom: 30px;
+}
+
+.theme-dropdown .dropdown-menu {
+  position: static;
+  display: block;
+  margin-bottom: 20px;
+}
+
+.theme-showcase .btn {
+  margin: 0px 5px;
+}
+
+.panel > .btn,
+#word_body > .btn {
+  margin: 0px 0px 16px 16px;
+}
+
+.theme-showcase .navbar .container {
+  width: auto;
+}
+
+.list-group-item {
+  padding-bottom: 0px;
+}
+
+.table td.fit, 
+.table th.fit {
+  width: 1%;
+}
+
+.table {
+  margin-bottom: 0px;
+}

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.2.1.min.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+</head>
+
+<body>
+
+<h1>vocab.json</h1>
+
+<ul class="nav nav-tabs" role="tablist" id="sectabs"></ul>
+<ul class="nav nav-pills" role="tablist" id="unittabs"></ul>
+<p id="disp"></p>
+
+<script>
+function disp(s) {
+    return s.replace(/`[^`|]*`/g, function(s) {
+        return '<rt>' + s.substring(1, s.length - 1) + '</rt>';
+    }).replace(/`[^`|]*\|/g, function(s) {
+        return '<rt>' + s.substring(1, s.length - 1) + '</rt>|';
+    }).replace(/\|[^|]*\|/g, function(s) {
+        return '<ruby>' + s.substring(1, s.length - 1) + '</ruby>';
+    }).replace(/\\n/g, '<br />');
+}
+
+function wordtb(word) {
+    var html = '<tr><td colspan="2"/></tr>';
+    for (field in word) {
+        if (info.type[field])
+            continue;
+        html = html.concat('<tr><th>', field, '</th><td');
+        var style = info.param[field].style;
+        if (style)
+            html = html.concat(' style="', style, '"');
+        html = html.concat('>', disp(word[field]), '</td></tr>');
+    }
+    return html;
+}
+
+$('#unittabs').on('click', 'a', function() {
+    var unit = $(this).text();
+    var array = payload[unit];
+    var html = '<table class="table table-bordered"><tbody>';
+    for (i in array)
+        html = html.concat(wordtb(array[i]));
+    html = html.concat("</tbody></table>");
+    $("#disp").html(html);
+});
+</script>
+
+<script>
+var info, payload;
+$('#sectabs').on('click', 'a', function() {
+    var sec = $(this).text();
+    info = obj[sec].info;
+    payload = obj[sec].payload;
+    var html = '';
+    for (unit in payload)
+        html = html.concat('<li><a href="#unit" data-toggle="tab">', unit, '</a></li>');
+    $("#unittabs").html(html);
+    $("#disp").html('');
+});
+</script>
+
+<script>
+$("#disp").html('<h2>Loading...</h2>');
+var req = new XMLHttpRequest();
+var obj;
+req.onreadystatechange = function() {
+    obj = JSON.parse(this.responseText);
+    var html = '';
+    for (sec in obj)
+        html = html.concat('<li><a href="#sec" data-toggle="tab">', sec, '</a></li>');
+    $("#sectabs").html(html);
+    $("#disp").html('');
+};
+req.open("GET", "vocab.json", true);
+req.send();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.2.1.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+  <link rel="stylesheet" href="theme.css">
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+</head>
+<body>
+<div class="container theme-showcase" role="main">
+
+  <ul class="nav nav-tabs" role="tablist" id="sectabs"></ul>
+  <script>
+function refreshSections()
+{
+  $.getJSON("get/section_list.php", function(res) {
+    var html = '';
+    for (i in res) {
+      var obj = res[i];
+      var id = obj['id'];
+      var name = obj['name'];
+      html = html.concat('<li><a href="#section" section="', id, '" data-toggle="tab">', name, '</a></li>');
+    }
+    html = html.concat('<li><a href="#section" section="add"><span class="glyphicon glyphicon-plus"></span></a></li>');
+    $('#sectabs').html(html);
+    $('#edit_section').hide(100);
+    $('#edit_word').hide(100);
+    refreshUnits(null);
+    section = '';
+  });
+}
+
+var section = ''
+$('#sectabs').on('click', 'a', function() {
+  var secid = $(this).attr('section');
+  if (secid == "add")
+    addSection();
+  else if (secid != section) {
+    $('#edit_section').hide(100);
+    $('#edit_word').show(100);
+    section = secid;
+    refreshUnits(section);
+    $(this).closest('ul').find('.btn-warning').remove();
+    $(this).append('<button class="btn btn-xs btn-warning"><span class="glyphicon glyphicon-pencil"></span></button>');
+    refreshEditSection(section);
+  }
+});
+  </script>
+
+  <div id="edit_section" hidden>
+    <p></p>
+    <div class="panel panel-warning">
+      <div class="panel-heading">
+        <h3 class="panel-title" id="section_id">Edit section #</h3>
+      </div>
+      <div class="panel-body">
+        <table class="table table-bordered"><tbody>
+          <tr><th class="fit">Name</th><td>
+              <input type="text" id="section_name" size="40" maxlength="256">
+            </td></tr>
+          <tr><th class="fit">Style</th><td>
+              <table class="table table-bordered jsonedit">
+                <tbody id="section_style"></tbody>
+              </table>
+            </td></tr>
+          <tr><th class="fit">Weight</th><td>
+              <table class="table table-bordered jsonedit">
+                <tbody id="section_weight"></tbody>
+              </table>
+            </td></tr>
+        </tbody></table>
+      </div>
+      <button class="btn btn-primary" id="section_save">Save</button>
+      <button class="btn btn-danger" id="section_delete">Delete</button>
+    </div>
+  </div>
+  <script>
+function refreshEditSection(id)
+{
+  $.getJSON("get/section.php?id=" + id, function(obj) {
+    $('#section_name').val(obj['name']);
+    $('#section_style').html(jsonedit('style', obj['style']));
+    $('#section_weight').html(jsonedit('weight', obj['weight']));
+  });
+  $('#section_id').text('Edit section #' + id);
+}
+
+$('#sectabs').on('click', '.btn-warning', function() {
+  $('#edit_section').toggle(100);
+});
+
+$('#section_save').click(function() {
+  var obj = {};
+  obj['id'] = section;
+  obj['name'] = $('#section_name').val();
+  obj['style'] = JSON.stringify(jsonobj($('#section_style')));
+  obj['weight'] = JSON.stringify(jsonobj($('#section_weight')));
+  $.post("set/section.php", JSON.stringify(obj), function(res) {
+    if (res !== 'OK')
+      alert("Save unsuccessful");
+    else
+      refreshSections();
+  });
+});
+
+$('#section_delete').click(function() {
+  if (confirm('DELETE section #' + section + '?'))
+    $.post('set/delete_section.php', 'id=' + section, refreshSections);
+});
+  </script>
+
+  <p></p>
+  <ul class="nav nav-pills" role="tablist" id="unittabs"></ul>
+  <script>
+function refreshUnits(section) {
+  if (section == null) {
+    $('#unittabs').html('');
+    $('#word_list').hide(100);
+    unit = '';
+    return;
+  }
+  $.getJSON('get/unit_list.php?id=' + section, function(array) {
+    var html = '';
+    for (i in array) {
+      var name = array[i][0];
+      html = html.concat('<li><a href="#unit" data-toggle="tab">', name, '</a></li>');
+    }
+    $('#unittabs').html(html);
+    $('#word_list').hide(100);
+    unit = '';
+  });
+}
+
+var unit = '';
+$('#unittabs').on('click', 'a', function() {
+  unit = $(this).text();
+  if (unit == '')
+    return;
+  refreshWords(unit);
+  refreshEditWord(unit);
+});
+  </script>
+
+  <div id="word_list" hidden>
+    <p></p>
+    <ul class="list-group"></ul>
+  </div>
+  <script>
+function refreshWords(unit)
+{
+  if (unit == '') {
+    $('#word_list').children('ul').html('');
+    return;
+  }
+  $.getJSON('get/word_list.php?id=' + section + '&unit=' + unit, function(array) {
+    var html = '';
+    for (i in array) {
+      var word = array[i];
+      html = html.concat('<li class="list-group-item"><h4 class="list-group-item-heading">' + disp(word['word']) +
+        '<button class="btn btn-xs btn-warning"><span class="glyphicon glyphicon-pencil"></span></button>' +
+        '</h4><p class="list-group-item-text"><table><tbody>' + worddisp(word) + '</tbody></table></p></li>');
+    }
+    $('#word_list').children('ul').html(html);
+    $('#word_list').show(100);
+  });
+}
+
+$('#word_list').on('click', '.btn-warning', function() {
+  alert('Editing not yet implemented');
+});
+  </script>
+
+  <div id="edit_word" hidden>
+    <p></p>
+    <div class="panel panel-info">
+      <div class="panel-heading">
+        <h3 class="panel-title" id="section_id">Add a new word</h3>
+      </div>
+      <div id="word_body" hidden>
+        <div class="panel-body">
+          <table class="table table-bordered"><tbody>
+            <tr><th class="fit">Unit</th><td>
+                <input type="text" id="word_unit" size="20" maxlength="256">
+              </td></tr>
+            <tr><th class="fit">Word</th><td>
+                <input type="text" id="word_word" size="40" maxlength="65536">
+              </td></tr>
+            <tr><th class="fit">Others</th><td>
+                <table class="table table-bordered jsonedit">
+                  <tbody id="word_info"></tbody>
+                </table>
+              </td></tr>
+          </tbody></table>
+        </div>
+        <button class="btn btn-primary" id="word_submit">Submit</button>
+        <button class="btn btn-danger" id="word_clear">Clear</button>
+      </div>
+    </div>
+  </div>
+  <script>
+function refreshEditWord(unit)
+{
+  $('#word_unit').val(unit);
+}
+
+$('#edit_word .panel-heading').click(function() {$('#word_body').toggle(100);});
+
+$('#word_submit').click(function() {
+  var obj = {id: section, unit: $('#word_unit').val(), word: $('#word_word').val(), info: JSON.stringify(jsonobj($('#word_info')))};
+  if (obj.id == '' || obj.word == '')
+    return;
+  $.post('set/new_word.php', JSON.stringify(obj), function(res) {
+    if (res == unit)
+      refreshWords(unit);
+    else
+      refreshUnits(section);
+    $('#word_word').val('');
+    $('#word_info').html(jsonfield('', ''));
+  });
+});
+
+$('#word_clear').click(function() {
+  $('#word_unit').val(unit);
+  $('#word_word').val('');
+  $('#word_info').html(jsonfield('', ''));
+});
+  </script>
+
+</div>
+<script>
+function addSection()
+{
+  var name = prompt('Add new section:');
+  if (name == null || name == '')
+    return;
+  $.post('set/new_section.php', 'name=' + name, refreshSections);
+}
+
+function disp(s) {
+    return s.replace(/`[^`|]*`/g, function(s) {
+        return '<rt>' + s.substring(1, s.length - 1) + '</rt>';
+    }).replace(/`[^`|]*\|/g, function(s) {
+        return '<rt>' + s.substring(1, s.length - 1) + '</rt>|';
+    }).replace(/\|[^|]*\|/g, function(s) {
+        return '<ruby>' + s.substring(1, s.length - 1) + '</ruby>';
+    }).replace(/\\n/g, '<br />');
+}
+
+function worddisp(obj) {
+  var html = '<table class="table table-condensed"><tbody>';
+  var info = JSON.parse(obj.info);
+  for (field in info) {
+    html = html.concat('<tr><th class="fit">', field, '</th><td>', disp(info[field]), '</td></tr>');
+  }
+  return html.concat('</tbody></table>');
+}
+
+function jsonedit(type, json) {
+  if (json === "")
+    return '';
+  var obj = JSON.parse(json);
+  var html = '';
+  for (field in obj)
+    html = html.concat(jsonfield(field, obj[field]));
+  return html.concat(jsonfield('', ''));
+}
+
+function jsonfield(field, value) {
+  return '<tr><th class="fit"><input type="text" size="8" maxlength="32" id="field" value="' + field +
+    '"></th></td><td><textarea type="text" rows="1" cols="40" id="value" value="' + value +
+    '" /></td><td><button class="btn btn-xs ' + (field ? 'btn-danger' : 'btn-success') +
+    '"><span class="glyphicon ' + (field ? 'glyphicon-remove' : 'glyphicon-plus') +
+    '"></span></button></td></tr>';
+}
+
+function jsonobj(table) {
+  var obj = {};
+  $(table).find("tr").each(function() {
+    var field = $(this).find("th input").val();
+    var value = $(this).find("td textarea").val();
+    if (field != '' && value != '')
+      obj[field] = value;
+  });
+  return obj;
+}
+
+$('.jsonedit').on('click', '.btn-success', function() {
+    var tr = $(this).closest('tr');
+    var field = tr.find('#field').val();
+    var value = tr.find('#value').val();
+    if (field === "" || value === "")
+        return;
+    $(this).removeClass('btn-success');
+    $(this).addClass('btn-danger');
+    $(this).children().removeClass('glyphicon-plus');
+    $(this).children().addClass('glyphicon-remove');
+    tr.parent().append(jsonfield('', ''));
+});
+
+$('.jsonedit').on('click', '.btn-danger', function() {
+    $(this).closest('tr').remove();
+});
+
+$('#word_info').html(jsonfield('', ''));
+refreshSections();
+</script>
+</body>
+</html>
