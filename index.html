@@ -3,18 +3,20 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.2.1.min.js"></script>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
   <link rel="stylesheet" href="theme.css">
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+  <script src="autosize.min.js"></script>
 </head>
 <body>
 <script>
 function nameEditor(name, value)
 {
-  return '<div class="input-group nameeditor"><div class="input-group-btn"><button class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span></button><button class="btn btn-warning"><span class="glyphicon glyphicon-remove"></span></button><button class="btn btn-success"><span class="glyphicon glyphicon-ok"></span></button></div><input class="form-control" type="text" placeholder="' + name + '" value="' + value + '"></div>';
+  return '<div class="input-group nameeditor"><span class="input-group-btn"><button class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span></button><button class="btn btn-warning"><span class="glyphicon glyphicon-remove"></span></button><button class="btn btn-success"><span class="glyphicon glyphicon-ok"></span></button></span><textarea class="form-control" type="text" rows=1 placeholder="' + name + '">' + value + '</textarea></div>';
 }
 
 function textEditor(name, value)
@@ -79,7 +81,7 @@ function jsonfield(field, value) {
   return '<tr><th class="fit"><div class="input-group"><div class="input-group-btn"><button class="btn ' +
     (field ? 'btn-danger' : 'btn-success') + '"><span class="glyphicon ' + (field ? 'glyphicon-remove' : 'glyphicon-plus') +
     '"></span></button></div><input class="form-control" type="text" id="field" value="' + field +
-    '"></div></th><td><textarea class="form-control" type="text" id="value">' + value + '</textarea></td></tr>';
+    '"></div></th><td><textarea class="form-control" type="text" rows=1 id="value">' + value + '</textarea></td></tr>';
 }
 
 function jsonobj(table) {
@@ -94,20 +96,21 @@ function jsonobj(table) {
 }
 
 $('body').on('click', '.jsonedit .btn-success', function() {
-    var tr = $(this).closest('tr');
-    var field = tr.find('#field').val();
-    var value = tr.find('#value').val();
-    if (field === "")
-        return;
-    $(this).removeClass('btn-success');
-    $(this).addClass('btn-danger');
-    $(this).children().removeClass('glyphicon-plus');
-    $(this).children().addClass('glyphicon-remove');
-    tr.parent().append(jsonfield('', ''));
+  var tr = $(this).closest('tr');
+  var field = tr.find('#field').val();
+  var value = tr.find('#value').val();
+  if (field === "")
+    return;
+  $(this).removeClass('btn-success');
+  $(this).addClass('btn-danger');
+  $(this).children().removeClass('glyphicon-plus');
+  $(this).children().addClass('glyphicon-remove');
+  tr.parent().append(jsonfield('', ''));
+  autosize(tr.parent().find('tr').last().find('textarea'));
 });
 
 $('body').on('click', '.jsonedit .btn-danger', function() {
-    $(this).closest('tr').remove();
+  $(this).closest('tr').remove();
 });
 // }}}
 </script>
@@ -125,7 +128,7 @@ function refreshSections()
       var obj = res[i];
       var id = obj['id'];
       var name = obj['name'];
-      html = html.concat('<li><a href="#section" section="', id, '" data-toggle="tab">', name, '</a></li>');
+      html = html.concat('<li><a href="#section" section="', id, '" data-toggle="tab">', disp(name), '</a></li>');
     }
     html = html.concat('<li><a href="#section" section="add"><span class="glyphicon glyphicon-plus"></span></a></li>');
     $('#sectabs').html(html);
@@ -177,13 +180,13 @@ $('#sectabs').on('click', 'a', function() {
       </div>
       <ul class="list-group">
         <li class="list-group-item list-group-item-info"><h4>Style settings</h4>
-          <table class="table table-no-border jsonedit">
-            <tbody id="section_style"></tbody>
+          <table class="table table-no-border">
+            <tbody id="section_style" class="jsonedit"></tbody>
           </table>
         </li>
         <li class="list-group-item list-group-item-danger"><h4>Word weights</h4>
-          <table class="table table-no-border jsonedit">
-            <tbody id="section_weight"></tbody>
+          <table class="table table-no-border">
+            <tbody id="section_weight" class="jsonedit"></tbody>
           </table>
         </li>
       </ul>
@@ -193,14 +196,17 @@ $('#sectabs').on('click', 'a', function() {
 function refreshEditSection()
 {
   $('#section_id').text('Edit section #' + secobj.id);
-  $('#section_name input').val(secobj.name);
+  $('#section_name textarea').val(secobj.name);
+  autosize.update($('#section_name textarea'));
   $('#section_style').html(jsonedit(secobj.style));
   $('#section_weight').html(jsonedit(secobj.weight));
+  autosize($('#edit_section textarea'));
 }
 
 $('#sectabs').on('click', '.btn-warning', function() {
-  refreshEditSection();
-  $('#edit_section').toggle(ani);
+  $('#edit_section').toggle(ani, function() {
+    refreshEditSection();
+  });
 });
 
 $('#edit_section .panel-heading').click(function() {$('#edit_section').hide(ani);});
@@ -208,7 +214,7 @@ $('#section_name .nameeditor .btn-warning').click(function() {$('#edit_section')
 
 $('#section_name .nameeditor .btn-success').click(function() {
   var obj = {id: section};
-  obj['name'] = $('#section_name input').val();
+  obj['name'] = $('#section_name textarea').val();
   obj['style'] = JSON.stringify(jsonobj($('#section_style')));
   obj['weight'] = JSON.stringify(jsonobj($('#section_weight')));
   $.post("set/section.php", JSON.stringify(obj), function(res) {
@@ -246,10 +252,10 @@ function refreshUnits(secid) {
     for (i in array) {
       var name = array[i][0];
       if (name == unit) {
-        html = html.concat('<li class="active"><a href="#unit" data-toggle="tab">', name, '</a></li>');
+        html = html.concat('<li class="active"><a href="#unit" data-toggle="tab">', disp(name), '</a></li>');
         found = true;
       } else
-        html = html.concat('<li><a href="#unit" data-toggle="tab">', name, '</a></li>');
+        html = html.concat('<li><a href="#unit" data-toggle="tab">', disp(name), '</a></li>');
     }
     $('#unittabs').html(html);
     if (found == false)
@@ -312,7 +318,8 @@ $('#word_list').on('click', '.btn-warning', function() {
       if (obj == null)
         return;
       item.addClass('list-group-item-warning');
-      item.html(textEditor('Unit', unit == '(default)' ? '' : unit) + '<p></p>' + nameEditor('Word', obj.word) + '<p></p><table class="table jsonedit"><tbody class="info">' + jsonedit(obj['info']) + '</tbody></table>');
+      item.html(textEditor('Unit', unit == '(default)' ? '' : unit) + '<p></p>' + nameEditor('Word', obj.word) + '<p></p><table class="table"><tbody class="jsonedit info">' + jsonedit(obj['info']) + '</tbody></table>');
+      autosize(item.find('textarea'));
     });
   }
 });
@@ -320,7 +327,7 @@ $('#word_list').on('click', '.btn-warning', function() {
 $('#word_list').on('click', '.nameeditor .btn-success', function() {
   var item = $(this).closest('li');
   var obj = {id: section, wid: item.attr('wid'), unit: item.find('.texteditor input').val(),
-    word: item.find('.nameeditor input').val(), info: JSON.stringify(jsonobj(item.find('tbody.info')))};
+    word: item.find('.nameeditor textarea').val(), info: JSON.stringify(jsonobj(item.find('tbody.info')))};
   if (obj.id == '' || obj.word == '')
     return;
   $.post('set/word.php', JSON.stringify(obj), function(res) {
@@ -358,7 +365,7 @@ $('#word_list').on('click', '.nameeditor .btn-danger', function() {
         <div class="panel-body">
           <script>document.write(textEditor('Unit', ''));</script><p></p>
           <script>document.write(nameEditor('Word', ''));</script><p></p>
-          <table class="table"><tbody id="word_info">
+          <table class="table"><tbody id="word_info" class="jsonedit">
             <script>document.write(jsonfield('', ''));</script>
           </tbody></table>
         </div>
@@ -369,15 +376,17 @@ $('#word_list').on('click', '.nameeditor .btn-danger', function() {
 function refreshEditWord(unit)
 {
   $('#word_body .texteditor input').val(unit == '(default)' ? '' : unit);
-  $('#word_body .nameeditor input').val('');
+  $('#word_body .nameeditor textarea').val('');
+  autosize.update($('#word_body .nameeditor textarea'));
   $('#word_info').html(jsonfield('', ''));
+  autosize($('#edit_word textarea'));
 }
 
 $('#edit_word .panel-heading').click(function() {$('#word_body').toggle(ani);});
 $('#word_body .nameeditor .btn-warning').click(function() {$('#word_body').hide(ani);});
 
 $('#word_body .nameeditor .btn-success').click(function() {
-  var obj = {id: section, wid: null, unit: $('#word_body .texteditor input').val(), word: $('#word_body .nameeditor input').val(), info: JSON.stringify(jsonobj($('#word_info')))};
+  var obj = {id: section, wid: null, unit: $('#word_body .texteditor input').val(), word: $('#word_body .nameeditor textarea').val(), info: JSON.stringify(jsonobj($('#word_info')))};
   if (obj.id == '' || obj.word == '')
     return;
   $.post('set/word.php', JSON.stringify(obj), function(res) {
@@ -385,8 +394,10 @@ $('#word_body .nameeditor .btn-success').click(function() {
       refreshWords(unit);
     else
       refreshUnits(section);
-    $('#word_body .nameeditor input').val('');
+    $('#word_body .nameeditor textarea').val('');
+    autosize.update($('#word_body .nameeditor textarea'));
     $('#word_info').html(jsonfield('', ''));
+    autosize($('#edit_word textarea'));
   });
 });
 
@@ -405,6 +416,7 @@ function addSection()
 }
 
 var ani = 120;  // Animation speed
+autosize($('textarea'));
 refreshSections();
 </script>
 </body>

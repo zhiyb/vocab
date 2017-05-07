@@ -60,3 +60,7 @@ th {
 td {
   vertical-align: middle !important;
 }
+
+.input-group-addon, .input-group-btn {
+  vertical-align: bottom;
+}
