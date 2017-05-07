@@ -49,4 +49,9 @@ th .input-group input.form-control {
 
 th {
   text-align: right;
+  vertical-align: middle !important;
+}
+
+td {
+  vertical-align: middle !important;
 }

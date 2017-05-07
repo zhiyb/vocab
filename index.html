@@ -14,34 +14,38 @@
 <script>
 function nameEditor(value)
 {
-  return '<div class="input-group nameeditor"><input class="form-control" name="word" type="text" value="' + value + '"></input><div class="input-group-btn"><button class="btn btn-success"><span class="glyphicon glyphicon-ok"></span></button><button class="btn btn-warning"><span class="glyphicon glyphicon-remove"></span></button><button class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span></button></div></div>';
+  return '<div class="input-group nameeditor"><div class="input-group-btn"><button class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span></button><button class="btn btn-warning"><span class="glyphicon glyphicon-remove"></span></button><button class="btn btn-success"><span class="glyphicon glyphicon-ok"></span></button></div><input class="form-control" name="word" type="text" value="' + value + '"></div>';
 }
 
 // {{{ HTML word display
 function disp(s) {
-    return s.replace(/`[^`|]*`/g, function(s) {
-        return '<rt>' + s.substring(1, s.length - 1) + '</rt>';
-    }).replace(/`[^`|]*\|/g, function(s) {
-        return '<rt>' + s.substring(1, s.length - 1) + '</rt>|';
-    }).replace(/\|[^|]*\|/g, function(s) {
-        return '<ruby>' + s.substring(1, s.length - 1) + '</ruby>';
-    }).replace(/\\n/g, '<br>').replace(/\n/g, '<br>');
+  return s.replace(/`[^`|]*`/g, function(s) {
+    return '<rt>' + s.substring(1, s.length - 1) + '</rt>';
+  }).replace(/`[^`|]*\|/g, function(s) {
+    return '<rt>' + s.substring(1, s.length - 1) + '</rt>|';
+  }).replace(/\|[^|]*\|/g, function(s) {
+    return '<ruby>' + s.substring(1, s.length - 1) + '</ruby>';
+  }).replace(/\\n/g, '<br>').replace(/\n/g, '<br>');
+}
+
+function dispStyle(type) {
+  if (type in style)
+    return 'style="' + style[type] + '"';
+  else
+    return '';
 }
 
 function wordDisp(obj) {
   var html = '<table class="table table-condensed"><tbody>';
   var info = JSON.parse(obj.info);
   for (field in info) {
-    html = html.concat('<tr><th class="fit">', field, '</th><td>', disp(info[field]), '</td></tr>');
+    html = html.concat('<tr><th class="fit">', field, '</th><td ' + dispStyle(field) + '>', disp(info[field]), '</td></tr>');
   }
   return html.concat('</tbody></table>');
 }
 
 function wordElement(word) {
-  return '<li class="list-group-item" wid="' + word.id +
-    '"><h4 class="list-group-item-heading">' + disp(word.word) +
-    '<button class="btn btn-sm btn-warning"><span class="glyphicon glyphicon-pencil"></span></button>' +
-    '</h4><p class="list-group-item-text"><table><tbody>' + wordDisp(word) + '</tbody></table></p></li>';
+  return '<li class="list-group-item" wid="' + word.id + '"><h4 class="list-group-item-heading" ' + dispStyle('word') + '>' + disp(word.word) + '<button class="btn btn-sm btn-warning"><span class="glyphicon glyphicon-pencil"></span></button></h4><p class="list-group-item-text"><table><tbody>' + wordDisp(word) + '</tbody></table></p></li>';
 }
 // }}}
 
@@ -60,8 +64,7 @@ function jsonfield(field, value) {
   return '<tr><th class="fit"><div class="input-group"><div class="input-group-btn"><button class="btn ' +
     (field ? 'btn-danger' : 'btn-success') + '"><span class="glyphicon ' + (field ? 'glyphicon-remove' : 'glyphicon-plus') +
     '"></span></button></div><input class="form-control" type="text" id="field" value="' + field +
-    '"></div></th></td><td><textarea class="form-control" type="text" id="value">' + value +
-    '</textarea></td></tr>';
+    '"></div></th><td><textarea class="form-control" type="text" id="value">' + value + '</textarea></td></tr>';
 }
 
 function jsonobj(table) {
@@ -119,17 +122,29 @@ function refreshSections()
 }
 
 var section = ''
+var secobj = {};
+var style = {}, weight = {};
 $('#sectabs').on('click', 'a', function() {
   var secid = $(this).attr('section');
   if (secid == "add")
     addSection();
   else if (secid != section) {
-    refreshUnits(secid);
-    section = secid;
-    $(this).closest('ul').find('.btn-warning').remove();
-    $(this).append('<button class="btn btn-xs btn-warning"><span class="glyphicon glyphicon-pencil"></span></button>');
-    $('#edit_section').hide(ani);
-    $('#edit_word').show(ani);
+    var a = $(this);
+    $.getJSON("get/section.php?id=" + secid, function(obj) {
+      refreshUnits(secid);
+      secobj = obj;
+      section = obj.id;
+      style = JSON.parse(obj.style);
+      if (style == null)
+        style = {};
+      weight = JSON.parse(obj.weight);
+      if (weight == null)
+        weight = {};
+      a.closest('ul').find('.btn-warning').remove();
+      a.append('<button class="btn btn-xs btn-warning"><span class="glyphicon glyphicon-pencil"></span></button>');
+      $('#edit_section').hide(ani);
+      $('#edit_word').show(ani);
+    });
   }
 });
   </script>
@@ -160,27 +175,22 @@ $('#sectabs').on('click', 'a', function() {
     </div>
   </div>
   <script>
-function refreshEditSection(id, func)
+function refreshEditSection()
 {
-  $.getJSON("get/section.php?id=" + id, function(obj) {
-    $('#section_id').text('Edit section #' + id);
-    $('#section_name :input').val(obj['name']);
-    $('#section_style').html(jsonedit(obj['style']));
-    $('#section_weight').html(jsonedit(obj['weight']));
-    func();
-  });
+  $('#section_id').text('Edit section #' + secobj.id);
+  $('#section_name :input').val(secobj.name);
+  $('#section_style').html(jsonedit(secobj.style));
+  $('#section_weight').html(jsonedit(secobj.weight));
 }
 
 $('#sectabs').on('click', '.btn-warning', function() {
-  refreshEditSection(section, function() {
-    $('#edit_section').toggle(ani);
-  });
+  refreshEditSection();
+  $('#edit_section').toggle(ani);
 });
 
 $('#section_name .nameeditor .btn-warning').click(function() {
-  refreshEditSection(section, function() {
-    $('#edit_section').hide(ani);
-  });
+  refreshEditSection();
+  $('#edit_section').hide(ani);
 });
 
 $('#section_name .nameeditor .btn-success').click(function() {
