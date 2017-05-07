@@ -252,10 +252,10 @@ function refreshUnits(secid) {
     for (i in array) {
       var name = array[i][0];
       if (name == unit) {
-        html = html.concat('<li class="active"><a href="#unit" data-toggle="tab">', disp(name), '</a></li>');
+        html = html.concat('<li class="active"><a href="#unit" name="', name, '" data-toggle="tab">', disp(name), '</a></li>');
         found = true;
       } else
-        html = html.concat('<li><a href="#unit" data-toggle="tab">', disp(name), '</a></li>');
+        html = html.concat('<li><a href="#unit" name="', name, '" data-toggle="tab">', disp(name), '</a></li>');
     }
     $('#unittabs').html(html);
     if (found == false)
@@ -264,7 +264,7 @@ function refreshUnits(secid) {
 }
 
 $('#unittabs').on('click', 'a', function() {
-  unit = $(this).text();
+  unit = $(this).attr('name');
   if (unit == '')
     return;
   refreshWords(unit);
