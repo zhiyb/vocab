@@ -265,6 +265,10 @@ function refreshWords(unit)
 function refreshWord(item)
 {
   $.getJSON('get/word.php?id=' + section + '&wid=' + item.attr('wid'), function(obj) {
+    if (obj == null) {
+      item.hide(ani, item.remove);
+      return;
+    }
     item.removeClass('list-group-item-warning');
     item.replaceWith(wordElement(obj));
   });
@@ -310,7 +314,7 @@ $('#word_list').on('click', '.nameeditor .btn-danger', function() {
   var wid = item.attr('wid');
   if (confirm('DELETE word #' + wid + '?'))
     $.post('set/delete_word.php', 'id=' + section + '&wid=' + wid, function() {
-      item.hide(ani, item.remove);
+      refreshWord(item);
       refreshUnits(section);
     });
 });
