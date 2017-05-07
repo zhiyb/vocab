@@ -13,6 +13,7 @@
 <body>
 <div class="container theme-showcase" role="main">
 
+  <!-- {{{ Section tabs -->
   <ul class="nav nav-tabs" role="tablist" id="sectabs"></ul>
   <script>
 function refreshSections()
@@ -42,15 +43,17 @@ $('#sectabs').on('click', 'a', function() {
   else if (secid != section) {
     $('#edit_section').hide(100);
     $('#edit_word').show(100);
+    refreshUnits(secid);
     section = secid;
-    refreshUnits(section);
     $(this).closest('ul').find('.btn-warning').remove();
     $(this).append('<button class="btn btn-xs btn-warning"><span class="glyphicon glyphicon-pencil"></span></button>');
     refreshEditSection(section);
   }
 });
   </script>
+  <!-- }}} -->
 
+  <!-- {{{ Section editor -->
   <div id="edit_section" hidden>
     <p></p>
     <div class="panel panel-warning">
@@ -60,7 +63,7 @@ $('#sectabs').on('click', 'a', function() {
       <div class="panel-body">
         <table class="table table-bordered"><tbody>
           <tr><th class="fit">Name</th><td>
-              <input type="text" id="section_name" size="40" maxlength="256">
+              <input class="form-control" type="text" id="section_name" maxlength="256">
             </td></tr>
           <tr><th class="fit">Style</th><td>
               <table class="table table-bordered jsonedit">
@@ -83,8 +86,8 @@ function refreshEditSection(id)
 {
   $.getJSON("get/section.php?id=" + id, function(obj) {
     $('#section_name').val(obj['name']);
-    $('#section_style').html(jsonedit('style', obj['style']));
-    $('#section_weight').html(jsonedit('weight', obj['weight']));
+    $('#section_style').html(jsonedit(obj['style']));
+    $('#section_weight').html(jsonedit(obj['weight']));
   });
   $('#section_id').text('Edit section #' + id);
 }
@@ -112,30 +115,39 @@ $('#section_delete').click(function() {
     $.post('set/delete_section.php', 'id=' + section, refreshSections);
 });
   </script>
+  <!-- }}} -->
 
+  <!-- {{{ Unit tabs -->
   <p></p>
   <ul class="nav nav-pills" role="tablist" id="unittabs"></ul>
   <script>
-function refreshUnits(section) {
-  if (section == null) {
+var unit = '';
+function refreshUnits(secid) {
+  if (secid == null) {
     $('#unittabs').html('');
     $('#word_list').hide(100);
     unit = '';
     return;
   }
-  $.getJSON('get/unit_list.php?id=' + section, function(array) {
+  if (secid != section)
+      unit = '';
+  $.getJSON('get/unit_list.php?id=' + secid, function(array) {
+    var found = false;
     var html = '';
     for (i in array) {
       var name = array[i][0];
-      html = html.concat('<li><a href="#unit" data-toggle="tab">', name, '</a></li>');
+      if (name == unit) {
+        html = html.concat('<li class="active"><a href="#unit" data-toggle="tab">', name, '</a></li>');
+        found = true;
+      } else
+        html = html.concat('<li><a href="#unit" data-toggle="tab">', name, '</a></li>');
     }
     $('#unittabs').html(html);
-    $('#word_list').hide(100);
-    unit = '';
+    if (found == false)
+      $('#word_list').hide(100);
   });
 }
 
-var unit = '';
 $('#unittabs').on('click', 'a', function() {
   unit = $(this).text();
   if (unit == '')
@@ -144,7 +156,9 @@ $('#unittabs').on('click', 'a', function() {
   refreshEditWord(unit);
 });
   </script>
+  <!-- }}} -->
 
+  <!-- {{{ Word list -->
   <div id="word_list" hidden>
     <p></p>
     <ul class="list-group"></ul>
@@ -158,22 +172,70 @@ function refreshWords(unit)
   }
   $.getJSON('get/word_list.php?id=' + section + '&unit=' + unit, function(array) {
     var html = '';
-    for (i in array) {
-      var word = array[i];
-      html = html.concat('<li class="list-group-item"><h4 class="list-group-item-heading">' + disp(word['word']) +
-        '<button class="btn btn-xs btn-warning"><span class="glyphicon glyphicon-pencil"></span></button>' +
-        '</h4><p class="list-group-item-text"><table><tbody>' + worddisp(word) + '</tbody></table></p></li>');
-    }
+    for (i in array)
+      html = html.concat(wordElement(array[i]));
     $('#word_list').children('ul').html(html);
     $('#word_list').show(100);
   });
 }
 
+function refreshWord(item)
+{
+  $.getJSON('get/word.php?id=' + section + '&wid=' + item.attr('wid'), function(obj) {
+    item.removeClass('list-group-item-warning');
+    item.replaceWith(wordElement(obj));
+  });
+}
+
 $('#word_list').on('click', '.btn-warning', function() {
-  alert('Editing not yet implemented');
+  var item = $(this).closest('li');
+  if (item.hasClass('list-group-item-warning')) {
+    // Discard changes
+    refreshWord(item);
+  } else {
+    // Display editing panel
+    var wid = item.attr('wid');
+    $.getJSON('get/word.php?id=' + section + '&wid=' + wid, function(obj) {
+      if (obj == null)
+        return;
+      item.addClass('list-group-item-warning');
+      item.html('<h4 class="list-group-item-heading"><div class="input-group"><input class="form-control" name="word" type="text" value="' + obj.word +
+          '"></input><div class="input-group-btn"><button class="btn btn-success"><span class="glyphicon glyphicon-ok"></span></button><button class="btn btn-warning"><span class="glyphicon glyphicon-remove"></span></button><button class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span></button></div></div></h4><p class="list-group-item-text"><table class="table table-bordered jsonedit"><tbody><th>Unit</th><td><input class="form-control" name="unit" type="text" value="' + unit + '"></td></tbody><tbody class="info">' +
+          jsonedit(obj['info']) + '<tbody></table></p>');
+    });
+  }
+});
+
+$('#word_list').on('click', '.list-group-item-heading .btn-success', function() {
+  var item = $(this).closest('li');
+  var obj = {id: section, wid: item.attr('wid'), unit: item.find(':input[name="unit"]').val(),
+    word: item.find(':input[name="word"]').val(), info: JSON.stringify(jsonobj(item.find('tbody.info')))};
+  if (obj.id == '' || obj.word == '')
+    return;
+  $.post('set/word.php', JSON.stringify(obj), function(res) {
+    if (res == '')
+      return;
+    // Remove the word if unit is different, otherwise refresh it
+    if (res != unit) {
+      item.hide(100, item.remove);
+      refreshUnits(section);
+    } else
+      refreshWord(item);
+  });
+});
+
+$('#word_list').on('click', '.list-group-item-heading .btn-danger', function() {
+  var item = $(this).closest('li');
+  var wid = item.attr('wid');
+  if (confirm('DELETE word #' + wid + '?'))
+    $.post('set/delete_word.php', 'id=' + section + '&wid=' + wid, function() {
+      ;
+    });
 });
   </script>
+  <!-- }}} -->
 
+  <!-- {{{ New word editor -->
   <div id="edit_word" hidden>
     <p></p>
     <div class="panel panel-info">
@@ -183,18 +245,13 @@ $('#word_list').on('click', '.btn-warning', function() {
       <div id="word_body" hidden>
         <div class="panel-body">
           <table class="table table-bordered"><tbody>
-            <tr><th class="fit">Unit</th><td>
-                <input type="text" id="word_unit" size="20" maxlength="256">
+            <tr><th class="fit">Unit</th><td colspan=2>
+                <input class="form-control" type="text" id="word_unit" maxlength="256">
               </td></tr>
-            <tr><th class="fit">Word</th><td>
-                <input type="text" id="word_word" size="40" maxlength="65536">
+            <tr><th class="fit">Word</th><td colspan=2>
+                <input class="form-control" type="text" id="word_word">
               </td></tr>
-            <tr><th class="fit">Others</th><td>
-                <table class="table table-bordered jsonedit">
-                  <tbody id="word_info"></tbody>
-                </table>
-              </td></tr>
-          </tbody></table>
+          </tbody><tbody id="word_info"></tbody></table>
         </div>
         <button class="btn btn-primary" id="word_submit">Submit</button>
         <button class="btn btn-danger" id="word_clear">Clear</button>
@@ -210,10 +267,10 @@ function refreshEditWord(unit)
 $('#edit_word .panel-heading').click(function() {$('#word_body').toggle(100);});
 
 $('#word_submit').click(function() {
-  var obj = {id: section, unit: $('#word_unit').val(), word: $('#word_word').val(), info: JSON.stringify(jsonobj($('#word_info')))};
+  var obj = {id: section, wid: null, unit: $('#word_unit').val(), word: $('#word_word').val(), info: JSON.stringify(jsonobj($('#word_info')))};
   if (obj.id == '' || obj.word == '')
     return;
-  $.post('set/new_word.php', JSON.stringify(obj), function(res) {
+  $.post('set/word.php', JSON.stringify(obj), function(res) {
     if (res == unit)
       refreshWords(unit);
     else
@@ -229,6 +286,7 @@ $('#word_clear').click(function() {
   $('#word_info').html(jsonfield('', ''));
 });
   </script>
+  <!-- }}} -->
 
 </div>
 <script>
@@ -240,6 +298,7 @@ function addSection()
   $.post('set/new_section.php', 'name=' + name, refreshSections);
 }
 
+// {{{ HTML word display
 function disp(s) {
     return s.replace(/`[^`|]*`/g, function(s) {
         return '<rt>' + s.substring(1, s.length - 1) + '</rt>';
@@ -247,10 +306,10 @@ function disp(s) {
         return '<rt>' + s.substring(1, s.length - 1) + '</rt>|';
     }).replace(/\|[^|]*\|/g, function(s) {
         return '<ruby>' + s.substring(1, s.length - 1) + '</ruby>';
-    }).replace(/\\n/g, '<br />');
+    }).replace(/\\n/g, '<br>').replace(/\n/g, '<br>');
 }
 
-function worddisp(obj) {
+function wordDisp(obj) {
   var html = '<table class="table table-condensed"><tbody>';
   var info = JSON.parse(obj.info);
   for (field in info) {
@@ -259,7 +318,16 @@ function worddisp(obj) {
   return html.concat('</tbody></table>');
 }
 
-function jsonedit(type, json) {
+function wordElement(word) {
+  return '<li class="list-group-item" wid="' + word.id +
+    '"><h4 class="list-group-item-heading">' + disp(word.word) +
+    '<button class="btn btn-sm btn-warning"><span class="glyphicon glyphicon-pencil"></span></button>' +
+    '</h4><p class="list-group-item-text"><table><tbody>' + wordDisp(word) + '</tbody></table></p></li>';
+}
+// }}}
+
+// {{{ JSON editor functions
+function jsonedit(json) {
   if (json === "")
     return '';
   var obj = JSON.parse(json);
@@ -270,29 +338,29 @@ function jsonedit(type, json) {
 }
 
 function jsonfield(field, value) {
-  return '<tr><th class="fit"><input type="text" size="8" maxlength="32" id="field" value="' + field +
-    '"></th></td><td><textarea type="text" rows="1" cols="40" id="value" value="' + value +
-    '" /></td><td><button class="btn btn-xs ' + (field ? 'btn-danger' : 'btn-success') +
-    '"><span class="glyphicon ' + (field ? 'glyphicon-remove' : 'glyphicon-plus') +
-    '"></span></button></td></tr>';
+  return '<tr><th class="fit"><div class="input-group"><div class="input-group-btn"><button class="btn ' +
+    (field ? 'btn-danger' : 'btn-success') + '"><span class="glyphicon ' + (field ? 'glyphicon-remove' : 'glyphicon-plus') +
+    '"></span></button></div><input class="form-control" type="text" id="field" value="' + field +
+    '"></div></th></td><td><textarea class="form-control" type="text" id="value">' + value +
+    '</textarea></td></tr>';
 }
 
 function jsonobj(table) {
   var obj = {};
   $(table).find("tr").each(function() {
     var field = $(this).find("th input").val();
-    var value = $(this).find("td textarea").val();
+    var value = $(this).find("td textarea").text();
     if (field != '' && value != '')
       obj[field] = value;
   });
   return obj;
 }
 
-$('.jsonedit').on('click', '.btn-success', function() {
+$('body').on('click', '.jsonedit .btn-success', function() {
     var tr = $(this).closest('tr');
     var field = tr.find('#field').val();
     var value = tr.find('#value').val();
-    if (field === "" || value === "")
+    if (field === "")
         return;
     $(this).removeClass('btn-success');
     $(this).addClass('btn-danger');
@@ -301,9 +369,10 @@ $('.jsonedit').on('click', '.btn-success', function() {
     tr.parent().append(jsonfield('', ''));
 });
 
-$('.jsonedit').on('click', '.btn-danger', function() {
+$('body').on('click', '.jsonedit .btn-danger', function() {
     $(this).closest('tr').remove();
 });
+// }}}
 
 $('#word_info').html(jsonfield('', ''));
 refreshSections();

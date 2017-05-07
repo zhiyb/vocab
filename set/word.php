@@ -7,6 +7,7 @@ if ($json == null)
     die();
 
 $id = $json['id'];
+$wid = $json['wid'];
 $unit = $json['unit'];
 $word = $json['word'];
 $info = $json['info'];
@@ -32,8 +33,8 @@ $id = getID($id);
 if ($id == null)
     die();
 
-$stmt = $db->prepare('INSERT INTO `w_' . $id . '` VALUES (NULL, ?, ?, ?)');
-$stmt->bind_param('sss', $unit, $word, $info);
+$stmt = $db->prepare('REPLACE INTO `w_' . $id . '` VALUES (?, ?, ?, ?)');
+$stmt->bind_param('isss', $wid, $unit, $word, $info);
 if ($stmt->execute() === true)
     echo "$unit";
 ?>

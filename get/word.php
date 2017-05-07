@@ -1,7 +1,7 @@
 <?php
 $id = $_GET['id'];
-$unit = $_GET['unit'];
-if ($id == null || $unit == null)
+$wid = $_GET['wid'];
+if ($id == null || $wid == null)
     die();
 
 require '../../dbconf.php';
@@ -20,10 +20,10 @@ function getID($id) {
 $id = getID($id);
 if ($id == null)
     die($db->error);
-$stmt = $db->prepare('SELECT id, word, info FROM `w_' . $id . '` WHERE unit = ?');
+$stmt = $db->prepare('SELECT id, unit, word, info FROM `w_' . $id . '` WHERE id = ?');
 if ($stmt == false)
     die($db->error);
-$stmt->bind_param('s', $unit);
+$stmt->bind_param('i', $wid);
 $stmt->execute();
-echo json_encode($stmt->get_result()->fetch_all(MYSQLI_ASSOC));
+echo json_encode($stmt->get_result()->fetch_all(MYSQLI_ASSOC)[0]);
 ?>
