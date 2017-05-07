@@ -86,7 +86,7 @@ function jsonobj(table) {
   var obj = {};
   $(table).find("tr").each(function() {
     var field = $(this).find("th input").val();
-    var value = $(this).find("td textarea").text();
+    var value = $(this).find("td textarea").val();
     if (field != '' && value != '')
       obj[field] = value;
   });
