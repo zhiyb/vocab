@@ -312,7 +312,7 @@ $('#word_list').on('click', '.btn-warning', function() {
       if (obj == null)
         return;
       item.addClass('list-group-item-warning');
-      item.html(textEditor('Unit', unit) + '<p></p>' + nameEditor('Word', obj.word) + '<p></p><table class="table jsonedit"><tbody class="info">' + jsonedit(obj['info']) + '</tbody></table>');
+      item.html(textEditor('Unit', unit == '(default)' ? '' : unit) + '<p></p>' + nameEditor('Word', obj.word) + '<p></p><table class="table jsonedit"><tbody class="info">' + jsonedit(obj['info']) + '</tbody></table>');
     });
   }
 });
@@ -368,7 +368,9 @@ $('#word_list').on('click', '.nameeditor .btn-danger', function() {
   <script>
 function refreshEditWord(unit)
 {
-  $('#word_body .texteditor input').val(unit);
+  $('#word_body .texteditor input').val(unit == '(default)' ? '' : unit);
+  $('#word_body .nameeditor input').val('');
+  $('#word_info').html(jsonfield('', ''));
 }
 
 $('#edit_word .panel-heading').click(function() {$('#word_body').toggle(ani);});
@@ -388,11 +390,7 @@ $('#word_body .nameeditor .btn-success').click(function() {
   });
 });
 
-$('#word_body .nameeditor .btn-danger').click(function() {
-  $('#word_body .texteditor input').val(unit);
-  $('#word_body .nameeditor input').val('');
-  $('#word_info').html(jsonfield('', ''));
-});
+$('#word_body .nameeditor .btn-danger').click(function() {refreshEditWord(unit);});
   </script>
   <!-- }}} -->
 
