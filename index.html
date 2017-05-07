@@ -172,21 +172,21 @@ $('#sectabs').on('click', 'a', function() {
       <div class="panel-heading">
         <h3 class="panel-title" id="section_id">Edit section #</h3>
       </div>
-      <div class="panel-body">
-        <table class="table table-no-border"><tbody>
-          <tr><td colspan=2 id="section_name"><script>document.write(nameEditor('Section name', ''));</script></td></tr>
-          <tr><th class="fit">Style</th><td>
-              <table class="table table-no-border jsonedit">
-                <tbody id="section_style"></tbody>
-              </table>
-            </td></tr>
-          <tr><th class="fit">Weight</th><td>
-              <table class="table table-no-border jsonedit">
-                <tbody id="section_weight"></tbody>
-              </table>
-            </td></tr>
-        </tbody></table>
+      <div class="panel-body" id="section_name">
+        <script>document.write(nameEditor('Section name', ''));</script>
       </div>
+      <ul class="list-group">
+        <li class="list-group-item list-group-item-info"><h4>Style settings</h4>
+          <table class="table table-no-border jsonedit">
+            <tbody id="section_style"></tbody>
+          </table>
+        </li>
+        <li class="list-group-item list-group-item-danger"><h4>Word weights</h4>
+          <table class="table table-no-border jsonedit">
+            <tbody id="section_weight"></tbody>
+          </table>
+        </li>
+      </ul>
     </div>
   </div>
   <script>
@@ -203,10 +203,8 @@ $('#sectabs').on('click', '.btn-warning', function() {
   $('#edit_section').toggle(ani);
 });
 
-$('#section_name .nameeditor .btn-warning').click(function() {
-  refreshEditSection();
-  $('#edit_section').hide(ani);
-});
+$('#edit_section .panel-heading').click(function() {$('#edit_section').hide(ani);});
+$('#section_name .nameeditor .btn-warning').click(function() {$('#edit_section').hide(ani);});
 
 $('#section_name .nameeditor .btn-success').click(function() {
   var obj = {id: section};
@@ -374,7 +372,6 @@ function refreshEditWord(unit)
 }
 
 $('#edit_word .panel-heading').click(function() {$('#word_body').toggle(ani);});
-
 $('#word_body .nameeditor .btn-warning').click(function() {$('#word_body').hide(ani);});
 
 $('#word_body .nameeditor .btn-success').click(function() {
