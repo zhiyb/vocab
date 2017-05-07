@@ -12,9 +12,14 @@
 </head>
 <body>
 <script>
-function nameEditor(value)
+function nameEditor(name, value)
 {
-  return '<div class="input-group nameeditor"><div class="input-group-btn"><button class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span></button><button class="btn btn-warning"><span class="glyphicon glyphicon-remove"></span></button><button class="btn btn-success"><span class="glyphicon glyphicon-ok"></span></button></div><input class="form-control" name="word" type="text" value="' + value + '"></div>';
+  return '<div class="input-group nameeditor"><div class="input-group-btn"><button class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span></button><button class="btn btn-warning"><span class="glyphicon glyphicon-remove"></span></button><button class="btn btn-success"><span class="glyphicon glyphicon-ok"></span></button></div><input class="form-control" type="text" placeholder="' + name + '" value="' + value + '"></div>';
+}
+
+function textEditor(name, value)
+{
+  return '<div class="input-group texteditor"><span class="input-group-addon">' + name + '</span><input class="form-control" type="text" value="' + value + '"></div>';
 }
 
 // {{{ HTML word display
@@ -158,15 +163,15 @@ $('#sectabs').on('click', 'a', function() {
         <h3 class="panel-title" id="section_id">Edit section #</h3>
       </div>
       <div class="panel-body">
-        <table class="table table-bordered"><tbody>
-          <tr><th class="fit">Name</th><td id="section_name"><script>document.write(nameEditor(''));</script></td></tr>
+        <table class="table table-no-border"><tbody>
+          <tr><td colspan=2 id="section_name"><script>document.write(nameEditor('Section name', ''));</script></td></tr>
           <tr><th class="fit">Style</th><td>
-              <table class="table table-bordered jsonedit">
+              <table class="table table-no-border jsonedit">
                 <tbody id="section_style"></tbody>
               </table>
             </td></tr>
           <tr><th class="fit">Weight</th><td>
-              <table class="table table-bordered jsonedit">
+              <table class="table table-no-border jsonedit">
                 <tbody id="section_weight"></tbody>
               </table>
             </td></tr>
@@ -178,7 +183,7 @@ $('#sectabs').on('click', 'a', function() {
 function refreshEditSection()
 {
   $('#section_id').text('Edit section #' + secobj.id);
-  $('#section_name :input').val(secobj.name);
+  $('#section_name input').val(secobj.name);
   $('#section_style').html(jsonedit(secobj.style));
   $('#section_weight').html(jsonedit(secobj.weight));
 }
@@ -195,7 +200,7 @@ $('#section_name .nameeditor .btn-warning').click(function() {
 
 $('#section_name .nameeditor .btn-success').click(function() {
   var obj = {id: section};
-  obj['name'] = $('#section_name :input').val();
+  obj['name'] = $('#section_name input').val();
   obj['style'] = JSON.stringify(jsonobj($('#section_style')));
   obj['weight'] = JSON.stringify(jsonobj($('#section_weight')));
   $.post("set/section.php", JSON.stringify(obj), function(res) {
@@ -299,15 +304,15 @@ $('#word_list').on('click', '.btn-warning', function() {
       if (obj == null)
         return;
       item.addClass('list-group-item-warning');
-      item.html('<h4 class="list-group-item-heading">' + nameEditor(obj.word) + '</h4><p class="list-group-item-text"><table class="table table-bordered jsonedit"><tbody><th>Unit</th><td><input class="form-control" name="unit" type="text" value="' + unit + '"></td></tbody><tbody class="info">' + jsonedit(obj['info']) + '<tbody></table></p>');
+      item.html(textEditor('Unit', unit) + '<p></p>' + nameEditor('Word', obj.word) + '<p></p><table class="table jsonedit"><tbody class="info">' + jsonedit(obj['info']) + '</tbody></table>');
     });
   }
 });
 
 $('#word_list').on('click', '.nameeditor .btn-success', function() {
   var item = $(this).closest('li');
-  var obj = {id: section, wid: item.attr('wid'), unit: item.find(':input[name="unit"]').val(),
-    word: item.find(':input[name="word"]').val(), info: JSON.stringify(jsonobj(item.find('tbody.info')))};
+  var obj = {id: section, wid: item.attr('wid'), unit: item.find('.texteditor input').val(),
+    word: item.find('.nameeditor input').val(), info: JSON.stringify(jsonobj(item.find('tbody.info')))};
   if (obj.id == '' || obj.word == '')
     return;
   $.post('set/word.php', JSON.stringify(obj), function(res) {
@@ -343,30 +348,27 @@ $('#word_list').on('click', '.nameeditor .btn-danger', function() {
       </div>
       <div id="word_body" hidden>
         <div class="panel-body">
-          <table class="table table-bordered"><tbody>
-            <tr><th class="fit">Unit</th><td colspan=2>
-                <input class="form-control" type="text" id="word_unit" maxlength="256">
-              </td></tr>
-            <tr><th class="fit">Word</th><td colspan=2>
-                <input class="form-control" type="text" id="word_word">
-              </td></tr>
-          </tbody><tbody id="word_info"><script>document.write(jsonfield('', ''));</script></tbody></table>
+          <script>document.write(textEditor('Unit', ''));</script><p></p>
+          <script>document.write(nameEditor('Word', ''));</script><p></p>
+          <table class="table"><tbody id="word_info">
+            <script>document.write(jsonfield('', ''));</script>
+          </tbody></table>
         </div>
-        <button class="btn btn-primary" id="word_submit">Submit</button>
-        <button class="btn btn-danger" id="word_clear">Clear</button>
       </div>
     </div>
   </div>
   <script>
 function refreshEditWord(unit)
 {
-  $('#word_unit').val(unit);
+  $('#word_body .texteditor input').val(unit);
 }
 
 $('#edit_word .panel-heading').click(function() {$('#word_body').toggle(ani);});
 
-$('#word_submit').click(function() {
-  var obj = {id: section, wid: null, unit: $('#word_unit').val(), word: $('#word_word').val(), info: JSON.stringify(jsonobj($('#word_info')))};
+$('#word_body .nameeditor .btn-warning').click(function() {$('#word_body').hide(ani);});
+
+$('#word_body .nameeditor .btn-success').click(function() {
+  var obj = {id: section, wid: null, unit: $('#word_body .texteditor input').val(), word: $('#word_body .nameeditor input').val(), info: JSON.stringify(jsonobj($('#word_info')))};
   if (obj.id == '' || obj.word == '')
     return;
   $.post('set/word.php', JSON.stringify(obj), function(res) {
@@ -374,14 +376,14 @@ $('#word_submit').click(function() {
       refreshWords(unit);
     else
       refreshUnits(section);
-    $('#word_word').val('');
+    $('#word_body .nameeditor input').val('');
     $('#word_info').html(jsonfield('', ''));
   });
 });
 
-$('#word_clear').click(function() {
-  $('#word_unit').val(unit);
-  $('#word_word').val('');
+$('#word_body .nameeditor .btn-danger').click(function() {
+  $('#word_body .texteditor input').val(unit);
+  $('#word_body .nameeditor input').val('');
   $('#word_info').html(jsonfield('', ''));
 });
   </script>

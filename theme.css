@@ -39,6 +39,11 @@ body {
   margin-bottom: 0px;
 }
 
+.table-no-border > tbody > tr:first-child > td,
+.table-no-border > tbody > tr:first-child > th {
+  border: none;
+}
+
 th input.form-control {
   width: 75px;
 }

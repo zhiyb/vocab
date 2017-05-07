@@ -10,6 +10,8 @@ $id = $json['id'];
 $name = $json['name'];
 $style = $json['style'];
 $weight = $json['weight'];
+if ($id == null || $name == null)
+    die();
 
 require '../../dbconf.php';
 $db = new mysqli($dbhost, $dbuser, $dbpw, $dbprefix . "vocab");
