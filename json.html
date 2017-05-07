@@ -14,6 +14,51 @@
 
 <h1>vocab.json</h1>
 
+<div class="input-group" id="transfer">
+  <span class="input-group-addon">Section ID</span>
+  <input class="form-control" type="text">
+  <div class="input-group-btn">
+    <button class="btn btn-primary">Transfer</button>
+  </div>
+</div>
+<script>
+$('#transfer .btn').click(function() {
+  alert('Function disabled');
+  return;
+  var secid = $('#transfer input').val();
+  if (secid == '')
+    return;
+  var hidden = [];
+  for (field in info.param)
+    if (info.param[field].hidden)
+      hidden.push(field);
+  hidden.reverse();
+  for (unit in payload) {
+    var array = payload[unit];
+    for (i in array) {
+      var word = array[i];
+      var fields = {};
+      for (field in word)
+        if (!(field in info.weight))
+          fields[field] = word[field];
+      var obj = {id: secid, wid: null, unit: unit};
+      for (ih in hidden) {
+        var h = hidden[ih];
+        if (h in fields) {
+          obj.word = fields[h];
+          delete fields[h];
+          break;
+        }
+      }
+      obj.info = JSON.stringify(fields);
+      $.post('set/word.php', JSON.stringify(obj));
+    }
+  }
+  alert('Word transfer done');
+});
+</script>
+
+<p></p>
 <ul class="nav nav-tabs" role="tablist" id="sectabs"></ul>
 <ul class="nav nav-pills" role="tablist" id="unittabs"></ul>
 <p id="disp"></p>

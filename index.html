@@ -41,8 +41,13 @@ function dispStyle(type) {
 }
 
 function wordDisp(obj) {
+  var info = {};
+  try {
+    info = JSON.parse(obj.info);
+  } catch (e) {
+    alert(e);
+  };
   var html = '<table class="table table-condensed"><tbody>';
-  var info = JSON.parse(obj.info);
   for (field in info) {
     html = html.concat('<tr><th class="fit">', field, '</th><td ' + dispStyle(field) + '>', disp(info[field]), '</td></tr>');
   }
@@ -58,7 +63,12 @@ function wordElement(word) {
 function jsonedit(json) {
   if (json === "")
     return '';
-  var obj = JSON.parse(json);
+  var obj = {};
+  try {
+    obj = JSON.parse(json);
+  } catch (e) {
+    alert(e);
+  };
   var html = '';
   for (field in obj)
     html = html.concat(jsonfield(field, obj[field]));
