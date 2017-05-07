@@ -26,15 +26,16 @@ function textEditor(name, value)
 
 // {{{ HTML word display
 function disp(s) {
-  return s.replace(/^[^|]*`[^|]*$/, function(s) {
-    return '|' + s + '|';
-  }).replace(/`[^`|]*`/g, function(s) {
-    return '<rt>' + s.substring(1, s.length - 1) + '</rt>';
-  }).replace(/`[^`|]*\|/g, function(s) {
-    return '<rt>' + s.substring(1, s.length - 1) + '</rt>|';
-  }).replace(/\|[^|]*\|/g, function(s) {
-    return '<ruby>' + s.substring(1, s.length - 1) + '</ruby>';
-  }).replace(/\\n/g, '<br>').replace(/\n/g, '<br>');
+  return s.replace(/\\n/g, '\n').replace(/<[^>]*>/g, function(s) {
+    var href = s.substring(1, s.length - 1);
+    return '<a href="' + href + '">' + href + '</a>'
+  }).replace(/\n/g, '|\n').replace(/[^|\n]*(\||$)/g, function(s) {
+    if (s.search('`') == -1)
+      return s;
+    return '<ruby>' + s.replace(/`[^`]*?(`|$)/g, function(s) {
+      return '<rt>' + s + '</rt>';
+    }) + '</ruby>';
+  }).replace(/[|`]/g, '').replace(/\n/g, '<br>');
 }
 
 function dispStyle(type) {

@@ -1,6 +1,15 @@
 body {
   padding-top: 30px;
   padding-bottom: 30px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+.container {
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
 }
 
 .theme-dropdown .dropdown-menu {
@@ -64,8 +73,9 @@ th {
 
 td {
   vertical-align: middle !important;
+  word-break: break-word;
 }
 
-.input-group-addon, .input-group-btn {
+.input-group-btn {
   vertical-align: bottom;
 }
