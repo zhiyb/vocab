@@ -111,10 +111,10 @@ function refreshSections()
     }
     html = html.concat('<li><a href="#section" section="add"><span class="glyphicon glyphicon-plus"></span></a></li>');
     $('#sectabs').html(html);
-    $('#edit_section').hide(ani);
-    $('#edit_word').hide(ani);
     refreshUnits(null);
     section = '';
+    $('#edit_section').hide(ani);
+    $('#edit_word').hide(ani);
   });
 }
 
@@ -124,12 +124,12 @@ $('#sectabs').on('click', 'a', function() {
   if (secid == "add")
     addSection();
   else if (secid != section) {
-    $('#edit_section').hide(ani);
-    $('#edit_word').show(ani);
     refreshUnits(secid);
     section = secid;
     $(this).closest('ul').find('.btn-warning').remove();
     $(this).append('<button class="btn btn-xs btn-warning"><span class="glyphicon glyphicon-pencil"></span></button>');
+    $('#edit_section').hide(ani);
+    $('#edit_word').show(ani);
   }
 });
   </script>
@@ -160,24 +160,27 @@ $('#sectabs').on('click', 'a', function() {
     </div>
   </div>
   <script>
-function refreshEditSection(id)
+function refreshEditSection(id, func)
 {
   $.getJSON("get/section.php?id=" + id, function(obj) {
+    $('#section_id').text('Edit section #' + id);
     $('#section_name :input').val(obj['name']);
     $('#section_style').html(jsonedit(obj['style']));
     $('#section_weight').html(jsonedit(obj['weight']));
+    func();
   });
-  $('#section_id').text('Edit section #' + id);
 }
 
 $('#sectabs').on('click', '.btn-warning', function() {
-  $('#edit_section').toggle(ani);
-  refreshEditSection(section);
+  refreshEditSection(section, function() {
+    $('#edit_section').toggle(ani);
+  });
 });
 
 $('#section_name .nameeditor .btn-warning').click(function() {
-  $('#edit_section').hide(ani);
-  refreshEditSection(section);
+  refreshEditSection(section, function() {
+    $('#edit_section').hide(ani);
+  });
 });
 
 $('#section_name .nameeditor .btn-success').click(function() {
@@ -208,8 +211,8 @@ var unit = '';
 function refreshUnits(secid) {
   if (secid == null) {
     $('#unittabs').html('');
-    $('#word_list').hide(ani);
     unit = '';
+    $('#word_list').hide(ani);
     return;
   }
   if (secid != section)
@@ -302,8 +305,8 @@ $('#word_list').on('click', '.nameeditor .btn-success', function() {
       return;
     // Remove the word if unit is different, otherwise refresh it
     if (res != unit) {
-      item.hide(ani, item.remove);
       refreshUnits(section);
+      item.hide(ani, item.remove);
     } else
       refreshWord(item);
   });
@@ -384,7 +387,7 @@ function addSection()
   $.post('set/new_section.php', 'name=' + name, refreshSections);
 }
 
-var ani = 100;  // Animation speed
+var ani = 120;  // Animation speed
 refreshSections();
 </script>
 </body>
