@@ -1,5 +1,5 @@
 <?php
-require '../dbconf.php';
+require '../../dbconf.php';
 $db = new mysqli($dbhost, $dbuser, $dbpw);
 if ($db->connect_error)
     die("Connection failed: " . $db->connect_error . "\n");

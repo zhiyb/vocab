@@ -7,8 +7,6 @@ body {
 }
 
 .container {
-  overflow-y: auto;
-  overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
 }
 
@@ -18,7 +16,8 @@ body {
   margin-bottom: 20px;
 }
 
-.theme-showcase .btn {
+.btn-group,
+.nav .btn {
   margin: 0px 5px;
 }
 
