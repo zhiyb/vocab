@@ -440,6 +440,7 @@ $('#word_body .nameeditor .btn-success').click(function() {
       refreshUnits(section);
     $('#word_body .nameeditor textarea').val('');
     $('#word_info td textarea').val('');
+    autosize.update($('#edit_word textarea'));
   });
 });
 
