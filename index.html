@@ -34,7 +34,7 @@ function disp(s) {
     if (s.search('`') == -1)
       return s;
     return '<ruby>' + s.replace(/`[^`]*?(`|$)/g, function(s) {
-      return '<rt>' + s + '</rt>';
+      return '<rp>(</rp><rt>' + s + '</rt><rp>)</rp>';
     }) + '</ruby>';
   }).replace(/[|`]/g, '').replace(/\n/g, '<br>');
 }
@@ -370,6 +370,8 @@ $('#word_list').on('click', '.nameeditor .btn-danger', function() {
           <textarea class="form-control" type="text" placeholder="Ruby annotation" rows=1></textarea>
           <p></p>
           <textarea class="form-control" type="text" placeholder="Word" rows=1></textarea>
+          <p></p>
+          <textarea class="form-control" type="text" placeholder="HTML" rows=1></textarea>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -382,16 +384,17 @@ $('#word_copy').on('shown.bs.modal', function() {autosize.update($('#word_copy t
 
 $('#word_list').on('click', '.btn-info', function() {
   var wid = $(this).closest('li').attr('wid');
-  var html = $(this).closest('.list-group-item-heading').html().replace(/<br[^>]*>/g, '\n');
-  var text = html.replace(/<rt>((?!<\/rt>).)*<\/rt>/g, '').replace(/<[^>]*>/g, '');
-  var ruby = html.replace(/<ruby>((?!(<rt>|<\/ruby>)).)*<rt>/g, '').replace(/<\/rt>((?!(<rt>|<\/ruby>)).)*<rt>/g, '').replace(/<[^>]*>/g, '');
+  var html = $(this).closest('.list-group-item-heading').html().replace(/<div((?!<\/div>).)*<\/div>/g, '');
+  var text = html.replace(/<br[^>]*>/g, '\n').replace(/<rp>((?!<\/rp>).)*<\/rp>/g, '').replace(/<rt>((?!<\/rt>).)*<\/rt>/g, '').replace(/<[^>]*>/g, '');
+  var ruby = html.replace(/<br[^>]*>/g, '\n').replace(/<ruby>((?!(<rt>|<\/ruby>)).)*<rt>/g, '').replace(/<\/rt>((?!(<rt>|<\/ruby>)).)*<rt>/g, '').replace(/<[^>]*>/g, '');
   var ta = $('#word_copy textarea');
-  ta.last().val(text);
   if (ruby != text) {
     ta.first().val(ruby);
     ta.first().show();
   } else
     ta.first().hide();
+  ta.eq(1).val(text);
+  ta.eq(2).val(html);
   $('#word_copy .modal-title').text('Word #' + wid + ':');
   $('#word_copy').modal();
 });
