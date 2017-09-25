@@ -370,12 +370,14 @@ $('#word_list').on('click', '.nameeditor .btn-danger', function() {
           <h4 class="modal-title"></h4>
         </div>
         <div class="modal-body">
-          <p>Annotation:<p>
-          <textarea class="form-control" type="text" placeholder="Ruby annotation" rows=1></textarea>
-          <p>Word:<p>
-          <textarea class="form-control" type="text" placeholder="Word" rows=1></textarea>
-          <p>HTML:<p>
-          <textarea class="form-control" type="text" placeholder="HTML" rows=1></textarea>
+          <div class="copy_field">With annotations:
+            <textarea class="form-control" type="text" placeholder="With annotation" rows=1></textarea><p></div>
+          <div class="copy_field">Annotations:
+            <textarea class="form-control" type="text" placeholder="Annotations" rows=1></textarea><p></div>
+          <div class="copy_field">Word:
+            <textarea class="form-control" type="text" placeholder="Word" rows=1></textarea><p></div>
+          <div class="copy_field">HTML:
+            <textarea class="form-control" type="text" placeholder="HTML" rows=1></textarea><p></div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -392,14 +394,25 @@ $('#word_list').on('click', '.btn-info', function() {
   var html = $(this).closest('.list-group-item-heading').html().replace(/<div((?!<\/div>).)*<\/div>/g, '');
   var text = html.replace(/<br[^>]*>/g, '\n').replace(/<rp>((?!<\/rp>).)*<\/rp>/g, '').replace(/<rt>((?!<\/rt>).)*<\/rt>/g, '').replace(/<[^>]*>/g, '');
   var ruby = html.replace(/<br[^>]*>/g, '\n').replace(/<rp>[^<]*<\/rp>/g, '').replace(/<ruby>((?!(<rt>|<\/ruby>)).)*<rt>/g, '').replace(/<\/rt>((?!(<rt>|<\/ruby>)).)*<rt>/g, '').replace(/<[^>]*>/g, '');
+  var plain = html.replace(/<br[^>]*>/g, '\n').replace(/<\/?rt>|<\/?rp>|<\/?ruby>/g, '');
   var ta = $('#word_copy textarea');
-  if (ruby != text) {
-    ta.first().val(ruby);
-    ta.first().show();
-  } else
-    ta.first().hide();
-  ta.eq(1).val(text);
-  ta.eq(2).val(html);
+  var f = $('#word_copy .copy_field');
+  if (plain != text)
+    f.eq(0).show(0);
+  else
+    f.eq(0).hide(0);
+  if (ruby != text)
+    f.eq(1).show(0);
+  else
+    f.eq(1).hide(0);
+  if (html != text)
+    f.eq(3).show(0);
+  else
+    f.eq(3).hide(0);
+  ta.eq(0).val(plain);
+  ta.eq(1).val(ruby);
+  ta.eq(2).val(text);
+  ta.eq(3).val(html);
   $('#word_copy .modal-title').text('Word #' + wid + ':');
   $('#word_copy').modal();
 });
