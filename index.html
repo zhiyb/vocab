@@ -310,6 +310,7 @@ function refreshWord(item)
   });
 }
 
+// Edit or cancel button
 $('#word_list').on('click', '.btn-warning', function() {
   var item = $(this).closest('li');
   if (item.hasClass('list-group-item-warning')) {
@@ -328,6 +329,7 @@ $('#word_list').on('click', '.btn-warning', function() {
   }
 });
 
+// Accept button
 $('#word_list').on('click', '.nameeditor .btn-success', function() {
   var item = $(this).closest('li');
   var obj = {id: section, wid: item.attr('wid'), unit: item.find('.texteditor input').val(),
@@ -346,6 +348,7 @@ $('#word_list').on('click', '.nameeditor .btn-success', function() {
   });
 });
 
+// Delete button
 $('#word_list').on('click', '.nameeditor .btn-danger', function() {
   var item = $(this).closest('li');
   var wid = item.attr('wid');
@@ -367,10 +370,11 @@ $('#word_list').on('click', '.nameeditor .btn-danger', function() {
           <h4 class="modal-title"></h4>
         </div>
         <div class="modal-body">
+          <p>Annotation:<p>
           <textarea class="form-control" type="text" placeholder="Ruby annotation" rows=1></textarea>
-          <p></p>
+          <p>Word:<p>
           <textarea class="form-control" type="text" placeholder="Word" rows=1></textarea>
-          <p></p>
+          <p>HTML:<p>
           <textarea class="form-control" type="text" placeholder="HTML" rows=1></textarea>
         </div>
         <div class="modal-footer">
@@ -382,11 +386,12 @@ $('#word_list').on('click', '.nameeditor .btn-danger', function() {
   <script>
 $('#word_copy').on('shown.bs.modal', function() {autosize.update($('#word_copy textarea'));});
 
+// Copy button
 $('#word_list').on('click', '.btn-info', function() {
   var wid = $(this).closest('li').attr('wid');
   var html = $(this).closest('.list-group-item-heading').html().replace(/<div((?!<\/div>).)*<\/div>/g, '');
   var text = html.replace(/<br[^>]*>/g, '\n').replace(/<rp>((?!<\/rp>).)*<\/rp>/g, '').replace(/<rt>((?!<\/rt>).)*<\/rt>/g, '').replace(/<[^>]*>/g, '');
-  var ruby = html.replace(/<br[^>]*>/g, '\n').replace(/<ruby>((?!(<rt>|<\/ruby>)).)*<rt>/g, '').replace(/<\/rt>((?!(<rt>|<\/ruby>)).)*<rt>/g, '').replace(/<[^>]*>/g, '');
+  var ruby = html.replace(/<br[^>]*>/g, '\n').replace(/<rp>[^<]*<\/rp>/g, '').replace(/<ruby>((?!(<rt>|<\/ruby>)).)*<rt>/g, '').replace(/<\/rt>((?!(<rt>|<\/ruby>)).)*<rt>/g, '').replace(/<[^>]*>/g, '');
   var ta = $('#word_copy textarea');
   if (ruby != text) {
     ta.first().val(ruby);
