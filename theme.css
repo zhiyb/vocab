@@ -78,3 +78,7 @@ td {
 .input-group-btn {
   vertical-align: bottom;
 }
+
+ruby {
+  ruby-align: center;
+}
