@@ -11,10 +11,11 @@
   <link rel="stylesheet" href="theme.css">
 </head>
 <body>
-<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
-<script src="js/autosize.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-csv/0.8.3/jquery.csv.min.js" integrity="sha256-xKWJpqP3ZjhipWOyzFuNmG2Zkp1cW4nhUREGBztcSXs=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/autosize.js/4.0.0/autosize.min.js" integrity="sha256-F7Bbc+3hGv34D+obsHHsSm3ZKRBudWR7e2H0fS0beok=" crossorigin="anonymous"></script>
 <script>
 function nameEditor(name, value)
 {
@@ -246,7 +247,7 @@ function refreshUnits(secid) {
   if (secid == null) {
     $('#unittabs').html('');
     unit = '';
-    $('#word_list').hide(ani);
+    $('.container > #word_list').hide(ani);
     return;
   }
   if (secid != section)
@@ -263,19 +264,107 @@ function refreshUnits(secid) {
         html = html.concat('<a class="nav-item nav-link align-self-end" href="#unit" name="', name, '" data-toggle="pill" role="tab">', disp(name), '</a>');
       }
     }
+    html = html.concat('<a class="nav-item nav-link align-self-end" href="#unit" type="import"><span class="fa fa-upload"></span></a>');
     $('#unittabs').html(html);
     if (found == false)
-      $('#word_list').hide(ani);
+      $('.container > #word_list').hide(ani);
   });
 }
 
 $('#unittabs').on('click', 'a', function() {
+  if ($(this).attr('type') == 'import') {
+    importUnit();
+    return;
+  }
   unit = $(this).attr('name');
   if (unit == '')
     return;
   refreshWords(unit);
   refreshEditWord(unit);
 });
+  </script>
+  <!-- }}} -->
+
+  <!-- {{{ Unit import dialog -->
+  <div id="unit_import" class="modal fade" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Import unit from file</h4>
+          <button type="button" class="close" data-dismiss="modal"><span class="fa fa-times"></span></button>
+        </div>
+        <div class="modal-body">
+          <script>document.write(textEditor('Unit', ''));</script><p>
+          <div class="input-group"><span class="input-group-addon"><a href="https://gist.github.com/zhiyb/70db96cfedbe494b729db2f4d6c1938d">CSV</a>&nbsp;import</span><input class="form-control" type="file" id="csv_file"></div>
+        </div>
+        <div id="word_list" style="display:none">
+          <p></p>
+          <ul class="list-group"></ul>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-dismiss="modal">Import</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+function importWordTable(e) {
+  var html = '<table class="table table-condensed"><tbody>';
+  var field;
+  for (field in e) {
+    html = html.concat('<tr><th class="fit">', field, '</th><td ' + dispStyle(field) + '>', disp(e[field]), '</td></tr>');
+  }
+  return html.concat('</tbody></table>');
+}
+
+function importShowWord(word, eng, kanji, type) {
+  var e = {};
+  if (eng)
+    e.english = eng;
+  if (kanji)
+    e.kanji = kanji;
+  if (type)
+    e.type = type;
+  return '<li class="list-group-item"><h4 class="list-group-item-heading" ' + dispStyle('word') + '>' + disp(word) + '<div class="btn-group"><button class="btn btn-sm btn-info"><span class="fa fa-copy"></span></button></div></h4><p class="list-group-item-text"><table><tbody>' + importWordTable(e) + '</tbody></table></p></li>';
+}
+
+function importCSV(contents) {
+  var arrays = $.csv.toArrays(contents, {delimiter: '"', separator: ','});
+  var html = '';
+  var i;
+  for (i in arrays) {
+    var a = arrays[i];
+    if (a[2] == a[1])
+      a[2] = '';
+    html = html.concat(importShowWord(a[1], a[0], a[2], a[3]));
+  }
+  var wl = $('#unit_import #word_list');
+  wl.children('ul').html(html);
+  wl.show(ani);
+}
+
+$('#unit_import').on('shown.bs.modal', function() {autosize.update($('#unit_import textarea'));});
+
+$('#unit_import #csv_file').on('change', function(e) {
+  var file = e.target.files[0];
+  if (!file)
+    return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var contents = e.target.result;
+    importCSV(contents);
+  }
+  reader.readAsText(file);
+});
+
+function importUnit() {
+  $('#unit_import .texteditor input').val(unit);
+  $('#unit_import #csv_file').val('');
+  $('#unit_import #word_list').children('ul').html('');
+  $('#unit_import').modal();
+}
   </script>
   <!-- }}} -->
 
@@ -287,16 +376,17 @@ $('#unittabs').on('click', 'a', function() {
   <script>
 function refreshWords(unit)
 {
+  var wl = $('.container > #word_list');
   if (unit == '') {
-    $('#word_list').children('ul').html('');
+    wl.children('ul').html('');
     return;
   }
   $.getJSON('get/word_list.php?id=' + section + '&unit=' + unit, function(array) {
     var html = '';
     for (i in array)
       html = html.concat(wordElement(array[i]));
-    $('#word_list').children('ul').html(html);
-    $('#word_list').show(ani);
+    wl.children('ul').html(html);
+    wl.show(ani);
   });
 }
 
