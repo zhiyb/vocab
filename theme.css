@@ -21,11 +21,6 @@ body {
   margin: 0px 5px;
 }
 
-.nav > li {
-  float: none;
-  display: inline-block;
-}
-
 .input-group-btn .btn{
   margin: 0px;
 }

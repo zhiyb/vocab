@@ -6,18 +6,19 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Lists of items with lists as word lists</title>
-  <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.2.1.min.js"></script>
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
   <link rel="stylesheet" href="theme.css">
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-  <script src="js/autosize.min.js"></script>
 </head>
 <body>
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+<script src="js/autosize.min.js"></script>
 <script>
 function nameEditor(name, value)
 {
-  return '<div class="input-group nameeditor"><span class="input-group-btn"><button class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span></button><button class="btn btn-warning"><span class="glyphicon glyphicon-remove"></span></button><button class="btn btn-success"><span class="glyphicon glyphicon-ok"></span></button></span><textarea class="form-control" type="text" rows=1 placeholder="' + name + '">' + value + '</textarea></div>';
+  return '<div class="input-group nameeditor"><span class="input-group-btn"><button class="btn btn-danger"><span class="fa fa-trash"></span></button><button class="btn btn-warning"><span class="fa fa-times"></span></button><button class="btn btn-success"><span class="fa fa-check"></span></button></span><textarea class="form-control" type="text" rows=1 placeholder="' + name + '">' + value + '</textarea></div>';
 }
 
 function textEditor(name, value)
@@ -61,7 +62,7 @@ function wordDisp(obj) {
 }
 
 function wordElement(word) {
-  return '<li class="list-group-item" wid="' + word.id + '"><h4 class="list-group-item-heading" ' + dispStyle('word') + '>' + disp(word.word) + '<div class="btn-group"><button class="btn btn-sm btn-warning"><span class="glyphicon glyphicon-pencil"></span></button><button class="btn btn-sm btn-info"><span class="glyphicon glyphicon-copy"></span></button></div></h4><p class="list-group-item-text"><table><tbody>' + wordDisp(word) + '</tbody></table></p></li>';
+  return '<li class="list-group-item" wid="' + word.id + '"><h4 class="list-group-item-heading" ' + dispStyle('word') + '>' + disp(word.word) + '<div class="btn-group"><button class="btn btn-sm btn-warning"><span class="fa fa-pencil"></span></button><button class="btn btn-sm btn-info"><span class="fa fa-copy"></span></button></div></h4><p class="list-group-item-text"><table><tbody>' + wordDisp(word) + '</tbody></table></p></li>';
 }
 // }}}
 
@@ -83,7 +84,7 @@ function jsonedit(json) {
 
 function jsonfield(field, value) {
   return '<tr><th class="fit"><div class="input-group"><div class="input-group-btn"><button class="btn ' +
-    (field ? 'btn-danger' : 'btn-success') + '"><span class="glyphicon ' + (field ? 'glyphicon-remove' : 'glyphicon-plus') +
+    (field ? 'btn-danger' : 'btn-success') + '"><span class="fa ' + (field ? 'fa-times' : 'fa-plus') +
     '"></span></button></div><input class="form-control" type="text" id="field" value="' + field +
     '"></div></th><td><textarea class="form-control" type="text" rows=1 id="value">' + value + '</textarea></td></tr>';
 }
@@ -107,8 +108,8 @@ $('body').on('click', '.jsonedit .btn-success', function() {
     return;
   $(this).removeClass('btn-success');
   $(this).addClass('btn-danger');
-  $(this).children().removeClass('glyphicon-plus');
-  $(this).children().addClass('glyphicon-remove');
+  $(this).children().removeClass('fa-plus');
+  $(this).children().addClass('fa-times');
   tr.parent().append(jsonfield('', ''));
   autosize(tr.parent().find('tr').last().find('textarea'));
 });
@@ -122,7 +123,7 @@ $('body').on('click', '.jsonedit .btn-danger', function() {
 <div class="container theme-showcase" role="main">
 
   <!-- {{{ Section tabs -->
-  <ul class="nav nav-tabs" role="tablist" id="sectabs"></ul>
+  <nav class="nav nav-tabs" role="tablist" id="sectabs"></nav>
   <script>
 function refreshSections()
 {
@@ -132,9 +133,9 @@ function refreshSections()
       var obj = res[i];
       var id = obj['id'];
       var name = obj['name'];
-      html = html.concat('<li><a href="#section" section="', id, '" data-toggle="tab">', disp(name), '</a></li>');
+      html = html.concat('<a class="nav-item nav-link align-self-end" href="#section" section="', id, '" data-toggle="tab">', disp(name), '</a>');
     }
-    html = html.concat('<li><a href="#section" section="add"><span class="glyphicon glyphicon-plus"></span></a></li>');
+    html = html.concat('<a class="nav-item nav-link align-self-end" href="#section" section="add"><span class="fa fa-plus"></span></a>');
     $('#sectabs').html(html);
     refreshUnits(null);
     section = '';
@@ -162,8 +163,8 @@ $('#sectabs').on('click', 'a', function() {
       weight = JSON.parse(obj.weight);
       if (weight == null)
         weight = {};
-      a.closest('ul').find('.btn-warning').remove();
-      a.append('<button class="btn btn-xs btn-warning"><span class="glyphicon glyphicon-pencil"></span></button>');
+      a.closest('nav').find('.btn-warning').remove();
+      a.append('<button class="btn btn-xs btn-warning"><span class="fa fa-pencil"></span></button>');
       $('#edit_section').hide(ani);
       $('#edit_word').show(ani);
     });
@@ -173,22 +174,22 @@ $('#sectabs').on('click', 'a', function() {
   <!-- }}} -->
 
   <!-- {{{ Section editor -->
-  <div id="edit_section" hidden>
+  <div id="edit_section" style="display:none">
     <p></p>
-    <div class="panel panel-warning">
-      <div class="panel-heading">
-        <h3 class="panel-title" id="section_id">Edit section #</h3>
-      </div>
-      <div class="panel-body" id="section_name">
+    <div class="card">
+      <div id="section_id" class="card-header bg-warning">Edit section #</div>
+      <div class="card-body" id="section_name">
         <script>document.write(nameEditor('Section name', ''));</script>
       </div>
       <ul class="list-group">
-        <li class="list-group-item list-group-item-info"><h4>Style settings</h4>
+        <li class="list-group-item list-group-item-info">
+          Style settings
           <table class="table table-no-border">
             <tbody id="section_style" class="jsonedit"></tbody>
           </table>
         </li>
-        <li class="list-group-item list-group-item-danger"><h4>Word weights</h4>
+        <li class="list-group-item list-group-item-danger">
+          Word weights
           <table class="table table-no-border">
             <tbody id="section_weight" class="jsonedit"></tbody>
           </table>
@@ -213,7 +214,7 @@ $('#sectabs').on('click', '.btn-warning', function() {
   });
 });
 
-$('#edit_section .panel-heading').click(function() {$('#edit_section').hide(ani);});
+$('#edit_section .card-header').click(function() {$('#edit_section').hide(ani);});
 $('#section_name .nameeditor .btn-warning').click(function() {$('#edit_section').hide(ani);});
 
 $('#section_name .nameeditor .btn-success').click(function() {
@@ -238,7 +239,7 @@ $('#section_name .nameeditor .btn-danger').click(function() {
 
   <!-- {{{ Unit tabs -->
   <p></p>
-  <ul class="nav nav-pills" role="tablist" id="unittabs"></ul>
+  <nav class="nav nav-pills" role="tablist" id="unittabs"></nav>
   <script>
 var unit = '';
 function refreshUnits(secid) {
@@ -256,10 +257,11 @@ function refreshUnits(secid) {
     for (i in array) {
       var name = array[i][0];
       if (name == unit) {
-        html = html.concat('<li class="active"><a href="#unit" name="', name, '" data-toggle="tab">', disp(name), '</a></li>');
+        html = html.concat('<a class="nav-item nav-link align-self-end" href="#unit" name="', name, '" data-toggle="pill" role="tab">', disp(name), '</a>');
         found = true;
-      } else
-        html = html.concat('<li><a href="#unit" name="', name, '" data-toggle="tab">', disp(name), '</a></li>');
+      } else {
+        html = html.concat('<a class="nav-item nav-link align-self-end" href="#unit" name="', name, '" data-toggle="pill" role="tab">', disp(name), '</a>');
+      }
     }
     $('#unittabs').html(html);
     if (found == false)
@@ -278,7 +280,7 @@ $('#unittabs').on('click', 'a', function() {
   <!-- }}} -->
 
   <!-- {{{ Word list -->
-  <div id="word_list" hidden>
+  <div id="word_list" style="display:none">
     <p></p>
     <ul class="list-group"></ul>
   </div>
@@ -363,11 +365,11 @@ $('#word_list').on('click', '.nameeditor .btn-danger', function() {
 
   <!-- {{{ Word copying modal dialog -->
   <div id="word_copy" class="modal fade" role="dialog">
-    <div class="modal-dialog">
+    <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span></button>
           <h4 class="modal-title"></h4>
+          <button type="button" class="close" data-dismiss="modal"><span class="fa fa-times"></span></button>
         </div>
         <div class="modal-body">
           <div class="copy_field">With annotations:
@@ -420,14 +422,12 @@ $('#word_list').on('click', '.btn-info', function() {
   <!-- }}} -->
 
   <!-- {{{ New word editor -->
-  <div id="edit_word" hidden>
+  <div id="edit_word" style="display:none">
     <p></p>
-    <div class="panel panel-info">
-      <div class="panel-heading">
-        <h3 class="panel-title" id="section_id">Add a new word</h3>
-      </div>
-      <div id="word_body" hidden>
-        <div class="panel-body">
+    <div class="card">
+      <div id="section_id" class="card-header bg-light">Add a new word</div>
+      <div id="word_body" style="display:none">
+        <div class="card-body">
           <script>document.write(textEditor('Unit', ''));</script><p></p>
           <script>document.write(nameEditor('Word', ''));</script><p></p>
           <table class="table"><tbody id="word_info" class="jsonedit">
@@ -447,7 +447,7 @@ function refreshEditWord(unit)
   autosize($('#edit_word textarea'));
 }
 
-$('#edit_word .panel-heading').click(function() {$('#word_body').toggle(ani);});
+$('#edit_word .card-header').click(function() {$('#word_body').toggle(ani);});
 $('#word_body .nameeditor .btn-warning').click(function() {$('#word_body').hide(ani);});
 
 $('#word_body .nameeditor .btn-success').click(function() {
