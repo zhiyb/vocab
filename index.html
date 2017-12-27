@@ -16,165 +16,18 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-csv/0.8.3/jquery.csv.min.js" integrity="sha256-xKWJpqP3ZjhipWOyzFuNmG2Zkp1cW4nhUREGBztcSXs=" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/autosize.js/4.0.0/autosize.min.js" integrity="sha256-F7Bbc+3hGv34D+obsHHsSm3ZKRBudWR7e2H0fS0beok=" crossorigin="anonymous"></script>
-<script>
-function nameEditor(name, value)
-{
-  return '<div class="input-group nameeditor"><span class="input-group-btn"><button class="btn btn-danger"><span class="fa fa-trash"></span></button><button class="btn btn-warning"><span class="fa fa-times"></span></button><button class="btn btn-success"><span class="fa fa-check"></span></button></span><textarea class="form-control" type="text" rows=1 placeholder="' + name + '">' + value + '</textarea></div>';
-}
-
-function textEditor(name, value)
-{
-  return '<div class="input-group texteditor"><span class="input-group-addon">' + name + '</span><input class="form-control" type="text" value="' + value + '"></div>';
-}
-
-// {{{ HTML word display
-function disp(s) {
-  return s.replace(/\\n/g, '\n').replace(/<[^>]*>/g, function(s) {
-    var href = s.substring(1, s.length - 1);
-    return '<a href="' + href + '">' + href + '</a>'
-  }).replace(/\n/g, '|\n').replace(/[^|\n]*(\||$)/g, function(s) {
-    if (s.search('`') == -1)
-      return s;
-    return '<ruby>' + s.replace(/`[^`]*?(`|$)/g, function(s) {
-      return '<rp>(</rp><rt>' + s + '</rt><rp>)</rp>';
-    }) + '</ruby>';
-  }).replace(/[|`]/g, '').replace(/\n/g, '<br>');
-}
-
-function dispStyle(type) {
-  if (type in style)
-    return 'style="' + style[type] + '"';
-  else
-    return '';
-}
-
-function wordDisp(obj) {
-  var info = {};
-  try {
-    info = JSON.parse(obj.info);
-  } catch (e) {
-    alert(e);
-  };
-  var html = '<table class="table table-condensed"><tbody>';
-  for (field in info) {
-    html = html.concat('<tr><th class="fit">', field, '</th><td ' + dispStyle(field) + '>', disp(info[field]), '</td></tr>');
-  }
-  return html.concat('</tbody></table>');
-}
-
-function wordElement(word) {
-  return '<li class="list-group-item" wid="' + word.id + '"><h4 class="list-group-item-heading" ' + dispStyle('word') + '>' + disp(word.word) + '<div class="btn-group"><button class="btn btn-sm btn-warning"><span class="fa fa-pencil"></span></button><button class="btn btn-sm btn-info"><span class="fa fa-copy"></span></button></div></h4><p class="list-group-item-text"><table><tbody>' + wordDisp(word) + '</tbody></table></li>';
-}
-// }}}
-
-// {{{ JSON editor functions
-function jsonedit(json) {
-  if (json === "")
-    return '';
-  var obj = {};
-  try {
-    obj = JSON.parse(json);
-  } catch (e) {
-    alert(e);
-  };
-  var html = '';
-  for (field in obj)
-    html = html.concat(jsonfield(field, obj[field]));
-  return html.concat(jsonfield('', ''));
-}
-
-function jsonfield(field, value) {
-  return '<tr><th class="fit"><div class="input-group"><div class="input-group-btn"><button class="btn ' +
-    (field ? 'btn-danger' : 'btn-success') + '"><span class="fa ' + (field ? 'fa-times' : 'fa-plus') +
-    '"></span></button></div><input class="form-control" type="text" id="field" value="' + field +
-    '"></div></th><td><textarea class="form-control" type="text" rows=1 id="value">' + value + '</textarea></td></tr>';
-}
-
-function jsonobj(table) {
-  var obj = {};
-  $(table).find("tr").each(function() {
-    var field = $(this).find("th input").val();
-    var value = $(this).find("td textarea").val();
-    if (field != '' && value != '')
-      obj[field] = value;
-  });
-  return obj;
-}
-
-$('body').on('click', '.jsonedit .btn-success', function() {
-  var tr = $(this).closest('tr');
-  var field = tr.find('#field').val();
-  var value = tr.find('#value').val();
-  if (field === "")
-    return;
-  $(this).removeClass('btn-success');
-  $(this).addClass('btn-danger');
-  $(this).children().removeClass('fa-plus');
-  $(this).children().addClass('fa-times');
-  tr.parent().append(jsonfield('', ''));
-  autosize(tr.parent().find('tr').last().find('textarea'));
-});
-
-$('body').on('click', '.jsonedit .btn-danger', function() {
-  $(this).closest('tr').remove();
-});
-// }}}
-</script>
+<script src="js/global.js"></script>
+<script src="js/sections.js"></script>
+<script src="js/units.js"></script>
+<script src="js/words.js"></script>
+<script src="js/import.js"></script>
 
 <div class="container theme-showcase" role="main">
 
-  <!-- {{{ Section tabs -->
+  <!-- Section tabs -->
   <nav class="nav nav-tabs" role="tablist" id="sectabs"></nav>
-  <script>
-function refreshSections()
-{
-  $.getJSON("get/section_list.php", function(res) {
-    var html = '';
-    for (i in res) {
-      var obj = res[i];
-      var id = obj['id'];
-      var name = obj['name'];
-      html = html.concat('<a class="nav-item nav-link align-self-end" href="#section" section="', id, '" data-toggle="tab">', disp(name), '</a>');
-    }
-    html = html.concat('<a class="nav-item nav-link align-self-end" href="#section" section="add"><span class="fa fa-plus"></span></a>');
-    $('#sectabs').html(html);
-    refreshUnits(null);
-    section = '';
-    $('#edit_section').hide(ani);
-    $('#edit_word').hide(ani);
-  });
-}
 
-var section = ''
-var secobj = {};
-var style = {}, weight = {};
-$('#sectabs').on('click', 'a', function() {
-  var secid = $(this).attr('section');
-  if (secid == "add")
-    addSection();
-  else if (secid != section) {
-    var a = $(this);
-    $.getJSON("get/section.php?id=" + secid, function(obj) {
-      refreshUnits(secid);
-      secobj = obj;
-      section = obj.id;
-      style = JSON.parse(obj.style);
-      if (style == null)
-        style = {};
-      weight = JSON.parse(obj.weight);
-      if (weight == null)
-        weight = {};
-      a.closest('nav').find('.btn-warning').remove();
-      a.append('<button class="btn btn-xs btn-warning"><span class="fa fa-pencil"></span></button>');
-      $('#edit_section').hide(ani);
-      $('#edit_word').show(ani);
-    });
-  }
-});
-  </script>
-  <!-- }}} -->
-
-  <!-- {{{ Section editor -->
+  <!-- Section editor -->
   <div id="edit_section" style="display:none">
     <p>
     <div class="card">
@@ -198,94 +51,11 @@ $('#sectabs').on('click', 'a', function() {
       </ul>
     </div>
   </div>
-  <script>
-function refreshEditSection()
-{
-  $('#section_id').text('Edit section #' + secobj.id);
-  $('#section_name textarea').val(secobj.name);
-  autosize.update($('#section_name textarea'));
-  $('#section_style').html(jsonedit(secobj.style));
-  $('#section_weight').html(jsonedit(secobj.weight));
-  autosize($('#edit_section textarea'));
-}
 
-$('#sectabs').on('click', '.btn-warning', function() {
-  $('#edit_section').toggle(ani, function() {
-    refreshEditSection();
-  });
-});
+  <!-- Unit tabs -->
+  <p><nav class="nav nav-pills" role="tablist" id="unittabs"></nav>
 
-$('#edit_section .card-header').click(function() {$('#edit_section').hide(ani);});
-$('#section_name .nameeditor .btn-warning').click(function() {$('#edit_section').hide(ani);});
-
-$('#section_name .nameeditor .btn-success').click(function() {
-  var obj = {id: section};
-  obj['name'] = $('#section_name textarea').val();
-  obj['style'] = JSON.stringify(jsonobj($('#section_style')));
-  obj['weight'] = JSON.stringify(jsonobj($('#section_weight')));
-  $.post("set/section.php", JSON.stringify(obj), function(res) {
-    if (res !== 'OK')
-      alert("Save unsuccessful");
-    else
-      refreshSections();
-  });
-});
-
-$('#section_name .nameeditor .btn-danger').click(function() {
-  if (confirm('DELETE section #' + section + '?'))
-    $.post('set/delete_section.php', 'id=' + section, refreshSections);
-});
-  </script>
-  <!-- }}} -->
-
-  <!-- {{{ Unit tabs -->
-  <p>
-  <nav class="nav nav-pills" role="tablist" id="unittabs"></nav>
-  <script>
-var unit = '';
-function refreshUnits(secid) {
-  if (secid == null) {
-    $('#unittabs').html('');
-    unit = '';
-    $('.container > .word_list').hide(ani);
-    return;
-  }
-  if (secid != section)
-      unit = '';
-  $.getJSON('get/unit_list.php?id=' + secid, function(array) {
-    var found = false;
-    var html = '';
-    for (i in array) {
-      var name = array[i][0];
-      if (name == unit) {
-        html = html.concat('<a class="nav-item nav-link align-self-end" href="#unit" name="', name, '" data-toggle="pill" role="tab">', disp(name), '</a>');
-        found = true;
-      } else {
-        html = html.concat('<a class="nav-item nav-link align-self-end" href="#unit" name="', name, '" data-toggle="pill" role="tab">', disp(name), '</a>');
-      }
-    }
-    html = html.concat('<a class="nav-item nav-link align-self-end" href="#unit" type="import"><span class="fa fa-upload"></span></a>');
-    $('#unittabs').html(html);
-    if (found == false)
-      $('.container > .word_list').hide(ani);
-  });
-}
-
-$('#unittabs').on('click', 'a', function() {
-  if ($(this).attr('type') == 'import') {
-    importUnit();
-    return;
-  }
-  unit = $(this).attr('name');
-  if (unit == '')
-    return;
-  refreshWords(unit);
-  refreshEditWord(unit);
-});
-  </script>
-  <!-- }}} -->
-
-  <!-- {{{ Unit import dialog -->
+  <!-- Unit import dialog -->
   <div id="unit_import" class="modal fade" role="dialog">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
@@ -306,190 +76,10 @@ $('#unittabs').on('click', 'a', function() {
     </div>
   </div>
 
-  <script>
-function importWordTable(e) {
-  var html = '<table class="table table-condensed"><tbody>';
-  var field;
-  for (field in e) {
-    if (field == 'word')
-      continue;
-    html = html.concat('<tr><th class="fit">', field, '</th><td ' + dispStyle(field) + '>', disp(e[field]), '</td></tr>');
-  }
-  return html.concat('</tbody></table>');
-}
+  <!-- Word list -->
+  <p><div class="word_list" style="display:none"><ul class="list-group"></ul></div>
 
-function importShowWord(word) {
-  return '<li wid="N/A" class="list-group-item"><h4 class="list-group-item-heading" ' + dispStyle('word') + '>' + disp(word.word) + '<div class="btn-group"><button class="btn btn-sm btn-info"><span class="fa fa-copy"></span></button></div></h4><p class="list-group-item-text"><table><tbody>' + importWordTable(word) + '</tbody></table></li>';
-}
-
-var import_words = [];
-
-function importCSV(contents) {
-  var arrays = $.csv.toArrays(contents, {delimiter: '"', separator: ','});
-  var html = '';
-  import_words = [];
-  var i;
-  for (i in arrays) {
-    var a = arrays[i];
-    switch (a[2]) {
-      case '': a[2] = a[1];
-      case a[1]: a[1] = '';
-    }
-    var word = {word: a[2]};
-    if (a[0])
-      word.english = a[0];
-    if (a[1])
-      word.kana = a[1];
-    if (a[3])
-      word.type = a[3];
-    import_words.push(word);
-    html = html.concat(importShowWord(word));
-  }
-  var wl = $('#unit_import .word_list');
-  wl.children('ul').html(html);
-  wl.show(ani);
-}
-
-$('#unit_import').on('shown.bs.modal', function() {autosize.update($('#unit_import textarea'));});
-
-$('#unit_import #csv_file').on('change', function(e) {
-  var file = e.target.files[0];
-  if (!file)
-    return;
-  var reader = new FileReader();
-  reader.onload = function(e) {
-    var contents = e.target.result;
-    importCSV(contents);
-  }
-  reader.readAsText(file);
-});
-
-// Import button
-$('#unit_import .btn-primary').click(function() {
-  if (import_words.length == 0) {
-    alert('No words imported');
-    return;
-  }
-  var obj = {};
-  obj.id = section;
-  obj.unit = $('#unit_import .texteditor input').val();
-  obj.payload = import_words;
-  $.post('set/import_unit.php', JSON.stringify(obj), function(ret) {
-    try {
-      var obj = JSON.parse(ret);
-    } catch (e) {
-      alert(e);
-    }
-    if (obj == null)
-      return;
-    if (obj.unit == unit)
-      refreshWords(unit);
-    else
-      refreshUnits(section);
-    alert('Imported ' + obj.cnt + ' of ' + import_words.length + ' words to unit ' + obj.unit);
-  });
-  $('#unit_import').modal('hide');
-});
-
-function importUnit() {
-  import_words = [];
-  $('#unit_import .texteditor input').val(unit);
-  $('#unit_import #csv_file').val('');
-  $('#unit_import .word_list').children('ul').html('');
-  $('#unit_import').modal();
-}
-  </script>
-  <!-- }}} -->
-
-  <!-- {{{ Word list -->
-  <p>
-  <div class="word_list" style="display:none"><ul class="list-group"></ul></div>
-  <script>
-function refreshWords(unit)
-{
-  var wl = $('.container > .word_list');
-  if (unit == '') {
-    wl.children('ul').html('');
-    return;
-  }
-  $.getJSON('get/word_list.php?id=' + section + '&unit=' + unit, function(array) {
-    var html = '';
-    for (i in array)
-      html = html.concat(wordElement(array[i]));
-    wl.children('ul').html(html);
-    wl.show(ani);
-  });
-}
-
-function refreshWord(item)
-{
-  $.getJSON('get/word.php?id=' + section + '&wid=' + item.attr('wid'), function(obj) {
-    if (obj == null) {
-      item.hide(ani, item.remove);
-      return;
-    }
-    item.removeClass('list-group-item-warning');
-    item.replaceWith(wordElement(obj));
-  });
-}
-
-// Edit or cancel button
-$('.word_list').on('click', '.btn-warning', function() {
-  var item = $(this).closest('li');
-  if (item.hasClass('list-group-item-warning')) {
-    // Discard changes
-    refreshWord(item);
-  } else {
-    // Display editing panel
-    var wid = item.attr('wid');
-    $.getJSON('get/word.php?id=' + section + '&wid=' + wid, function(obj) {
-      if (obj == null)
-        return;
-      item.addClass('list-group-item-warning');
-      item.html(textEditor('Unit', unit == '(default)' ? '' : unit) + '<p>' + nameEditor('Word', obj.word) + '<p><table class="table"><tbody class="jsonedit info">' + jsonedit(obj['info']) + '</tbody></table>');
-      autosize(item.find('textarea'));
-    });
-  }
-});
-
-// Accept button
-$('.word_list').on('click', '.nameeditor .btn-success', function() {
-  var item = $(this).closest('li');
-  var obj = {id: section, wid: item.attr('wid'), unit: item.find('.texteditor input').val(),
-    word: item.find('.nameeditor textarea').val(), info: JSON.stringify(jsonobj(item.find('tbody.info')))};
-  if (obj.id == '' || obj.word == '')
-    return;
-  $.post('set/word.php', JSON.stringify(obj), function(ret) {
-    try {
-      var obj = JSON.parse(ret);
-    } catch (e) {
-      alert(e);
-    }
-    if (obj == null || obj.cnt != 1)
-      return;
-    // Remove the word if unit is different, otherwise refresh it
-    if (obj.unit != unit) {
-      refreshUnits(section);
-      item.hide(ani, item.remove);
-    } else
-      refreshWord(item);
-  });
-});
-
-// Delete button
-$('.word_list').on('click', '.nameeditor .btn-danger', function() {
-  var item = $(this).closest('li');
-  var wid = item.attr('wid');
-  if (confirm('DELETE word #' + wid + '?'))
-    $.post('set/delete_word.php', 'id=' + section + '&wid=' + wid, function() {
-      refreshWord(item);
-      refreshUnits(section);
-    });
-});
-  </script>
-  <!-- }}} -->
-
-  <!-- {{{ Word copying modal dialog -->
+  <!-- Word copying modal dialog -->
   <div id="word_copy" class="modal fade" role="dialog">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
@@ -513,41 +103,8 @@ $('.word_list').on('click', '.nameeditor .btn-danger', function() {
       </div>
     </div>
   </div>
-  <script>
-$('#word_copy').on('shown.bs.modal', function() {autosize.update($('#word_copy textarea'));});
 
-// Copy button
-$('.word_list').on('click', '.btn-info', function() {
-  var wid = $(this).closest('li').attr('wid');
-  var html = $(this).closest('.list-group-item-heading').html().replace(/<div((?!<\/div>).)*<\/div>/g, '');
-  var text = html.replace(/<br[^>]*>/g, '\n').replace(/<rp>((?!<\/rp>).)*<\/rp>/g, '').replace(/<rt>((?!<\/rt>).)*<\/rt>/g, '').replace(/<[^>]*>/g, '');
-  var ruby = html.replace(/<br[^>]*>/g, '\n').replace(/<rp>[^<]*<\/rp>/g, '').replace(/<ruby>((?!(<rt>|<\/ruby>)).)*<rt>/g, '').replace(/<\/rt>((?!(<rt>|<\/ruby>)).)*<rt>/g, '').replace(/<[^>]*>/g, '');
-  var plain = html.replace(/<br[^>]*>/g, '\n').replace(/<\/?rt>|<\/?rp>|<\/?ruby>/g, '');
-  var ta = $('#word_copy textarea');
-  var f = $('#word_copy .copy_field');
-  if (plain != text)
-    f.eq(0).show(0);
-  else
-    f.eq(0).hide(0);
-  if (ruby != text)
-    f.eq(1).show(0);
-  else
-    f.eq(1).hide(0);
-  if (html != text)
-    f.eq(3).show(0);
-  else
-    f.eq(3).hide(0);
-  ta.eq(0).val(plain);
-  ta.eq(1).val(ruby);
-  ta.eq(2).val(text);
-  ta.eq(3).val(html);
-  $('#word_copy .modal-title').text('Word #' + wid + ':');
-  $('#word_copy').modal();
-});
-  </script>
-  <!-- }}} -->
-
-  <!-- {{{ New word editor -->
+  <!-- New word editor -->
   <div id="edit_word" style="display:none">
     <p>
     <div class="card">
@@ -563,58 +120,8 @@ $('.word_list').on('click', '.btn-info', function() {
       </div>
     </div>
   </div>
-  <script>
-function refreshEditWord(unit)
-{
-  $('#word_body .texteditor input').val(unit == '(default)' ? '' : unit);
-  $('#word_body .nameeditor textarea').val('');
-  autosize.update($('#word_body .nameeditor textarea'));
-  $('#word_info').html(jsonfield('', ''));
-  autosize($('#edit_word textarea'));
-}
-
-$('#edit_word .card-header').click(function() {$('#word_body').toggle(ani);});
-$('#word_body .nameeditor .btn-warning').click(function() {$('#word_body').hide(ani);});
-
-$('#word_body .nameeditor .btn-success').click(function() {
-  var obj = {id: section, wid: null, unit: $('#word_body .texteditor input').val(), word: $('#word_body .nameeditor textarea').val(), info: JSON.stringify(jsonobj($('#word_info')))};
-  if (obj.id == '' || obj.word == '')
-    return;
-  $.post('set/word.php', JSON.stringify(obj), function(ret) {
-    try {
-      var obj = JSON.parse(ret);
-    } catch (e) {
-      alert(e);
-    }
-    if (obj == null || obj.cnt != 1)
-      return;
-    if (obj.unit == unit)
-      refreshWords(unit);
-    else
-      refreshUnits(section);
-    $('#word_body .nameeditor textarea').val('');
-    $('#word_info td textarea').val('');
-    autosize.update($('#edit_word textarea'));
-  });
-});
-
-$('#word_body .nameeditor .btn-danger').click(function() {refreshEditWord(unit);});
-  </script>
-  <!-- }}} -->
 
 </div>
-<script>
-function addSection()
-{
-  var name = prompt('Add new section:');
-  if (name == null || name == '')
-    return;
-  $.post('set/new_section.php', 'name=' + name, refreshSections);
-}
-
-var ani = 120;  // Animation speed
-autosize($('textarea'));
-refreshSections();
-</script>
+<script src="js/actions.js"></script>
 </body>
 </html>
