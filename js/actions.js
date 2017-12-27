@@ -36,7 +36,7 @@ $('#sectabs').on('click', 'a', function() {
       if (weight == null)
         weight = {};
       a.closest('nav').find('.btn-warning').remove();
-      a.append('<button class="btn btn-xs btn-warning"><span class="fa fa-pencil"></span></button>');
+      a.append(sectionEditButton());
       $('#edit_section').hide(ani);
       $('#edit_word').show(ani);
     });
@@ -66,14 +66,14 @@ $('#section_name .nameeditor .btn-success').click(function() {
     if (res !== 'OK')
       alert("Save unsuccessful");
     else
-      refreshSections();
+      refreshSections(true);
   });
 });
 
 // Section editor 'remove'
 $('#section_name .nameeditor .btn-danger').click(function() {
   if (confirm('DELETE section #' + section + '?'))
-    $.post('set/delete_section.php', 'id=' + section, refreshSections);
+    $.post('set/delete_section.php', 'id=' + section, function() {refreshSections(true);});
 });
 
 // Unit tabs 'click'
@@ -251,4 +251,4 @@ $('#word_body .nameeditor .btn-danger').click(function() {refreshEditWord(unit);
 
 // Initialise
 autosize($('textarea'));
-refreshSections();
+refreshSections(true);

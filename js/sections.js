@@ -7,10 +7,15 @@ function addSection()
   var name = prompt('Add new section:');
   if (name == null || name == '')
     return;
-  $.post('set/new_section.php', 'name=' + name, refreshSections);
+  $.post('set/new_section.php', 'name=' + name, function() {refreshSections(false);});
 }
 
-function refreshSections()
+function sectionEditButton()
+{
+      return '<button class="btn btn-xs btn-warning"><span class="fa fa-pencil"></span></button>';
+}
+
+function refreshSections(refresh)
 {
   $.getJSON("get/section_list.php", function(res) {
     var html = '';
@@ -18,11 +23,18 @@ function refreshSections()
       var obj = res[i];
       var id = obj['id'];
       var name = obj['name'];
-      html = html.concat('<a class="nav-item nav-link align-self-end" href="#section" section="', id, '" data-toggle="tab">', disp(name), '</a>');
+      var active = '';
+      var button = '';
+      if (!refresh && id == section) {
+        active = 'active';
+        button = sectionEditButton();
+      }
+      html = html.concat('<a class="nav-item ' + active + ' nav-link align-self-end" href="#section" section="' + id + '" data-toggle="tab">' + disp(name) + button + '</a>');
     }
     html = html.concat('<a class="nav-item nav-link align-self-end" href="#section" section="add"><span class="fa fa-plus"></span></a>');
     $('#sectabs').html(html);
-    refreshUnits(null);
+    if (refresh)
+      refreshUnits(null);
     section = '';
     $('#edit_section').hide(ani);
     $('#edit_word').hide(ani);
