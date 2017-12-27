@@ -19,6 +19,6 @@ function getID($id) {
 $id = getID($id);
 if ($id == null)
     die($db->error);
-$res = $db->query('SELECT DISTINCT unit FROM `w_' . $id . '`')->fetch_all(MYSQLI_NUM);
+$res = $db->query('SELECT DISTINCT unit FROM `w_' . $id . '` ORDER BY unit')->fetch_all(MYSQLI_NUM);
 echo json_encode($res);
 ?>
