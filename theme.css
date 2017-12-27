@@ -10,7 +10,7 @@ body {
   -webkit-overflow-scrolling: touch;
 }
 
-#unit_import #word_list {
+#unit_import .word_list {
   max-height: 50vh;
   overflow-y: scroll;
   -webkit-overflow-scrolling: touch;

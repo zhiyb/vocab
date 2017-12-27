@@ -247,7 +247,7 @@ function refreshUnits(secid) {
   if (secid == null) {
     $('#unittabs').html('');
     unit = '';
-    $('.container > #word_list').hide(ani);
+    $('.container > .word_list').hide(ani);
     return;
   }
   if (secid != section)
@@ -267,7 +267,7 @@ function refreshUnits(secid) {
     html = html.concat('<a class="nav-item nav-link align-self-end" href="#unit" type="import"><span class="fa fa-upload"></span></a>');
     $('#unittabs').html(html);
     if (found == false)
-      $('.container > #word_list').hide(ani);
+      $('.container > .word_list').hide(ani);
   });
 }
 
@@ -296,7 +296,7 @@ $('#unittabs').on('click', 'a', function() {
         <div class="modal-body">
           <script>document.write(textEditor('Unit', ''));</script><p>
           <div class="input-group"><span class="input-group-addon"><a href="https://gist.github.com/zhiyb/70db96cfedbe494b729db2f4d6c1938d">Anki CSV</a>&nbsp;import</span><input class="form-control" type="file" id="csv_file"></div><p>
-          <div id="word_list" style="display:none"><ul class="list-group"></ul></div>
+          <div class="word_list" style="display:none"><ul class="list-group"></ul></div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-primary" data-dismiss="modal">Import</button>
@@ -324,7 +324,7 @@ function importShowWord(word, eng, kanji, type) {
     e.kanji = kanji;
   if (type)
     e.type = type;
-  return '<li class="list-group-item"><h4 class="list-group-item-heading" ' + dispStyle('word') + '>' + disp(word) + '<div class="btn-group"><button class="btn btn-sm btn-info"><span class="fa fa-copy"></span></button></div></h4><p class="list-group-item-text"><table><tbody>' + importWordTable(e) + '</tbody></table></li>';
+  return '<li wid="N/A" class="list-group-item"><h4 class="list-group-item-heading" ' + dispStyle('word') + '>' + disp(word) + '<div class="btn-group"><button class="btn btn-sm btn-info"><span class="fa fa-copy"></span></button></div></h4><p class="list-group-item-text"><table><tbody>' + importWordTable(e) + '</tbody></table></li>';
 }
 
 function importCSV(contents) {
@@ -337,7 +337,7 @@ function importCSV(contents) {
       a[2] = '';
     html = html.concat(importShowWord(a[1], a[0], a[2], a[3]));
   }
-  var wl = $('#unit_import #word_list');
+  var wl = $('#unit_import .word_list');
   wl.children('ul').html(html);
   wl.show(ani);
 }
@@ -359,7 +359,7 @@ $('#unit_import #csv_file').on('change', function(e) {
 function importUnit() {
   $('#unit_import .texteditor input').val(unit);
   $('#unit_import #csv_file').val('');
-  $('#unit_import #word_list').children('ul').html('');
+  $('#unit_import .word_list').children('ul').html('');
   $('#unit_import').modal();
 }
   </script>
@@ -367,11 +367,11 @@ function importUnit() {
 
   <!-- {{{ Word list -->
   <p>
-  <div id="word_list" style="display:none"><ul class="list-group"></ul></div>
+  <div class="word_list" style="display:none"><ul class="list-group"></ul></div>
   <script>
 function refreshWords(unit)
 {
-  var wl = $('.container > #word_list');
+  var wl = $('.container > .word_list');
   if (unit == '') {
     wl.children('ul').html('');
     return;
@@ -398,7 +398,7 @@ function refreshWord(item)
 }
 
 // Edit or cancel button
-$('#word_list').on('click', '.btn-warning', function() {
+$('.word_list').on('click', '.btn-warning', function() {
   var item = $(this).closest('li');
   if (item.hasClass('list-group-item-warning')) {
     // Discard changes
@@ -417,7 +417,7 @@ $('#word_list').on('click', '.btn-warning', function() {
 });
 
 // Accept button
-$('#word_list').on('click', '.nameeditor .btn-success', function() {
+$('.word_list').on('click', '.nameeditor .btn-success', function() {
   var item = $(this).closest('li');
   var obj = {id: section, wid: item.attr('wid'), unit: item.find('.texteditor input').val(),
     word: item.find('.nameeditor textarea').val(), info: JSON.stringify(jsonobj(item.find('tbody.info')))};
@@ -436,7 +436,7 @@ $('#word_list').on('click', '.nameeditor .btn-success', function() {
 });
 
 // Delete button
-$('#word_list').on('click', '.nameeditor .btn-danger', function() {
+$('.word_list').on('click', '.nameeditor .btn-danger', function() {
   var item = $(this).closest('li');
   var wid = item.attr('wid');
   if (confirm('DELETE word #' + wid + '?'))
@@ -476,7 +476,7 @@ $('#word_list').on('click', '.nameeditor .btn-danger', function() {
 $('#word_copy').on('shown.bs.modal', function() {autosize.update($('#word_copy textarea'));});
 
 // Copy button
-$('#word_list').on('click', '.btn-info', function() {
+$('.word_list').on('click', '.btn-info', function() {
   var wid = $(this).closest('li').attr('wid');
   var html = $(this).closest('.list-group-item-heading').html().replace(/<div((?!<\/div>).)*<\/div>/g, '');
   var text = html.replace(/<br[^>]*>/g, '\n').replace(/<rp>((?!<\/rp>).)*<\/rp>/g, '').replace(/<rt>((?!<\/rt>).)*<\/rt>/g, '').replace(/<[^>]*>/g, '');
