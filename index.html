@@ -295,11 +295,8 @@ $('#unittabs').on('click', 'a', function() {
         </div>
         <div class="modal-body">
           <script>document.write(textEditor('Unit', ''));</script><p>
-          <div class="input-group"><span class="input-group-addon"><a href="https://gist.github.com/zhiyb/70db96cfedbe494b729db2f4d6c1938d">CSV</a>&nbsp;import</span><input class="form-control" type="file" id="csv_file"></div>
-        </div>
-        <div id="word_list" style="display:none">
-          <p></p>
-          <ul class="list-group"></ul>
+          <div class="input-group"><span class="input-group-addon"><a href="https://gist.github.com/zhiyb/70db96cfedbe494b729db2f4d6c1938d">CSV</a>&nbsp;import</span><input class="form-control" type="file" id="csv_file"></div><p></p>
+          <div id="word_list" style="display:none"><ul class="list-group"></ul></div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-primary" data-dismiss="modal">Import</button>
@@ -369,10 +366,8 @@ function importUnit() {
   <!-- }}} -->
 
   <!-- {{{ Word list -->
-  <div id="word_list" style="display:none">
-    <p></p>
-    <ul class="list-group"></ul>
-  </div>
+  <p></p>
+  <div id="word_list" style="display:none"><ul class="list-group"></ul></div>
   <script>
 function refreshWords(unit)
 {

@@ -10,6 +10,12 @@ body {
   -webkit-overflow-scrolling: touch;
 }
 
+#unit_import #word_list {
+  max-height: 50vh;
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
+}
+
 .theme-dropdown .dropdown-menu {
   position: static;
   display: block;
