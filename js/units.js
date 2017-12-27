@@ -14,12 +14,12 @@ function refreshUnits(secid) {
     var html = '';
     for (i in array) {
       var name = array[i][0];
+      var active = '';
       if (name == unit) {
-        html = html.concat('<a class="nav-item nav-link align-self-end" href="#unit" name="', name, '" data-toggle="pill" role="tab">', disp(name), '</a>');
+        active = 'active';
         found = true;
-      } else {
-        html = html.concat('<a class="nav-item nav-link align-self-end" href="#unit" name="', name, '" data-toggle="pill" role="tab">', disp(name), '</a>');
       }
+      html = html.concat('<a class="nav-item ' + active + ' nav-link align-self-end" href="#unit" name="', name, '" data-toggle="pill" role="tab">', disp(name), '</a>');
     }
     html = html.concat('<a class="nav-item nav-link align-self-end" href="#unit" type="import"><span class="fa fa-upload"></span></a>');
     $('#unittabs').html(html);
