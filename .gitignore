@@ -1,3 +1,4 @@
 *.min.js
 *.min.css
 *.json
+dbconf.php

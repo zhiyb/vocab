@@ -6,7 +6,7 @@ $name = $_POST["name"];
 if ($name == null)
     die();
 
-require '../../dbconf.php';
+require '../dbconf.php';
 $db = new mysqli($dbhost, $dbuser, $dbpw, $dbprefix . 'vocab');
 if ($db->connect_error)
     die("Connection failed: " . $db->connect_error . "\n");
