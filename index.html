@@ -316,12 +316,12 @@ function importWordTable(e) {
   return html.concat('</tbody></table>');
 }
 
-function importShowWord(word, eng, kanji, type) {
+function importShowWord(word, eng, kana, type) {
   var e = {};
   if (eng)
     e.english = eng;
-  if (kanji)
-    e.kanji = kanji;
+  if (kana)
+    e.kana = kana;
   if (type)
     e.type = type;
   return '<li wid="N/A" class="list-group-item"><h4 class="list-group-item-heading" ' + dispStyle('word') + '>' + disp(word) + '<div class="btn-group"><button class="btn btn-sm btn-info"><span class="fa fa-copy"></span></button></div></h4><p class="list-group-item-text"><table><tbody>' + importWordTable(e) + '</tbody></table></li>';
@@ -333,9 +333,11 @@ function importCSV(contents) {
   var i;
   for (i in arrays) {
     var a = arrays[i];
-    if (a[2] == a[1])
-      a[2] = '';
-    html = html.concat(importShowWord(a[1], a[0], a[2], a[3]));
+    switch (a[2]) {
+      case '': a[2] = a[1];
+      case a[1]: a[1] = '';
+    }
+    html = html.concat(importShowWord(a[2], a[0], a[1], a[3]));
   }
   var wl = $('#unit_import .word_list');
   wl.children('ul').html(html);
