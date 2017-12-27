@@ -48,3 +48,39 @@ function importUnit() {
   $('#unit_import .word_list').children('ul').html('');
   $('#unit_import').modal();
 }
+
+function importCSVFile(file) {
+  if (!file)
+    return;
+  var reader = new FileReader();
+  reader.onload = function(e) {importCSV(e.target.result);}
+  reader.readAsText(file);
+}
+
+function importSubmit() {
+  if (import_words.length == 0) {
+    alert('No words imported');
+    return;
+  }
+  var obj = {};
+  obj.id = section;
+  obj.unit = $('#unit_import .texteditor input').val();
+  obj.payload = import_words;
+  $.post('set/import_unit.php', JSON.stringify(obj), function(ret) {
+    try {
+      var obj = JSON.parse(ret);
+    } catch (e) {
+      alert(e);
+    }
+    if (obj == null)
+      return;
+    if (obj.unit == unit) {
+      refreshWords(unit);
+    } else {
+      refreshUnits(section);
+      switchUnit(obj.unit, true);
+    }
+    alert('Imported ' + obj.cnt + ' of ' + import_words.length + ' words to unit ' + obj.unit);
+  });
+  $('#unit_import').modal('hide');
+}

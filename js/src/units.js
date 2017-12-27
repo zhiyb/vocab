@@ -27,3 +27,15 @@ function refreshUnits(secid) {
       $('.container > .word_list').hide(ani);
   });
 }
+
+function switchUnit(u, act) {
+  unit = u;
+  if (unit == '')
+    return;
+  refreshWords(unit);
+  refreshEditWord(unit);
+  if (!act)
+    return;
+  $('#unittabs nav-link').removeClass("active");
+  $('#unittabs nav-link[name="' + unit + '"]').addClass("active");
+}

@@ -82,55 +82,15 @@ $('#unittabs').on('click', 'a', function() {
     importUnit();
     return;
   }
-  unit = $(this).attr('name');
-  if (unit == '')
-    return;
-  refreshWords(unit);
-  refreshEditWord(unit);
+  switchUnit($(this).attr('name'), false);
 });
 
 // Unit tabs 'import'
 $('#unit_import').on('shown.bs.modal', function() {autosize.update($('#unit_import textarea'));});
-
 // Unit import Anki CSV file 'open'
-$('#unit_import #csv_file').on('change', function(e) {
-  var file = e.target.files[0];
-  if (!file)
-    return;
-  var reader = new FileReader();
-  reader.onload = function(e) {
-    var contents = e.target.result;
-    importCSV(contents);
-  }
-  reader.readAsText(file);
-});
-
+$('#unit_import #csv_file').on('change', function(e) {importCSVFile(e.target.files[0]);});
 // Unit import button 'submit'
-$('#unit_import .btn-primary').click(function() {
-  if (import_words.length == 0) {
-    alert('No words imported');
-    return;
-  }
-  var obj = {};
-  obj.id = section;
-  obj.unit = $('#unit_import .texteditor input').val();
-  obj.payload = import_words;
-  $.post('set/import_unit.php', JSON.stringify(obj), function(ret) {
-    try {
-      var obj = JSON.parse(ret);
-    } catch (e) {
-      alert(e);
-    }
-    if (obj == null)
-      return;
-    if (obj.unit == unit)
-      refreshWords(unit);
-    else
-      refreshUnits(section);
-    alert('Imported ' + obj.cnt + ' of ' + import_words.length + ' words to unit ' + obj.unit);
-  });
-  $('#unit_import').modal('hide');
-});
+$('#unit_import .btn-primary').click(importSubmit);
 
 // Word list 'edit' or word editor 'cancel'
 $('.word_list').on('click', '.btn-warning', function() {
