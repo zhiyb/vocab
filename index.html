@@ -299,7 +299,7 @@ $('#unittabs').on('click', 'a', function() {
           <div class="word_list" style="display:none"><ul class="list-group"></ul></div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-primary" data-dismiss="modal">Import</button>
+          <button type="button" class="btn btn-primary">Import</button>
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
         </div>
       </div>
@@ -311,25 +311,23 @@ function importWordTable(e) {
   var html = '<table class="table table-condensed"><tbody>';
   var field;
   for (field in e) {
+    if (field == 'word')
+      continue;
     html = html.concat('<tr><th class="fit">', field, '</th><td ' + dispStyle(field) + '>', disp(e[field]), '</td></tr>');
   }
   return html.concat('</tbody></table>');
 }
 
-function importShowWord(word, eng, kana, type) {
-  var e = {};
-  if (eng)
-    e.english = eng;
-  if (kana)
-    e.kana = kana;
-  if (type)
-    e.type = type;
-  return '<li wid="N/A" class="list-group-item"><h4 class="list-group-item-heading" ' + dispStyle('word') + '>' + disp(word) + '<div class="btn-group"><button class="btn btn-sm btn-info"><span class="fa fa-copy"></span></button></div></h4><p class="list-group-item-text"><table><tbody>' + importWordTable(e) + '</tbody></table></li>';
+function importShowWord(word) {
+  return '<li wid="N/A" class="list-group-item"><h4 class="list-group-item-heading" ' + dispStyle('word') + '>' + disp(word.word) + '<div class="btn-group"><button class="btn btn-sm btn-info"><span class="fa fa-copy"></span></button></div></h4><p class="list-group-item-text"><table><tbody>' + importWordTable(word) + '</tbody></table></li>';
 }
+
+var import_words = [];
 
 function importCSV(contents) {
   var arrays = $.csv.toArrays(contents, {delimiter: '"', separator: ','});
   var html = '';
+  import_words = [];
   var i;
   for (i in arrays) {
     var a = arrays[i];
@@ -337,7 +335,15 @@ function importCSV(contents) {
       case '': a[2] = a[1];
       case a[1]: a[1] = '';
     }
-    html = html.concat(importShowWord(a[2], a[0], a[1], a[3]));
+    var word = {word: a[2]};
+    if (a[0])
+      word.english = a[0];
+    if (a[1])
+      word.kana = a[1];
+    if (a[3])
+      word.type = a[3];
+    import_words.push(word);
+    html = html.concat(importShowWord(word));
   }
   var wl = $('#unit_import .word_list');
   wl.children('ul').html(html);
@@ -358,7 +364,35 @@ $('#unit_import #csv_file').on('change', function(e) {
   reader.readAsText(file);
 });
 
+// Import button
+$('#unit_import .btn-primary').click(function() {
+  if (import_words.length == 0) {
+    alert('No words imported');
+    return;
+  }
+  var obj = {};
+  obj.id = section;
+  obj.unit = $('#unit_import .texteditor input').val();
+  obj.payload = import_words;
+  $.post('set/import_unit.php', JSON.stringify(obj), function(ret) {
+    try {
+      var obj = JSON.parse(ret);
+    } catch (e) {
+      alert(e);
+    }
+    if (obj == null)
+      return;
+    if (obj.unit == unit)
+      refreshWords(unit);
+    else
+      refreshUnits(section);
+    alert('Imported ' + obj.cnt + ' of ' + import_words.length + ' words to unit ' + obj.unit);
+  });
+  $('#unit_import').modal('hide');
+});
+
 function importUnit() {
+  import_words = [];
   $('#unit_import .texteditor input').val(unit);
   $('#unit_import #csv_file').val('');
   $('#unit_import .word_list').children('ul').html('');
@@ -425,11 +459,16 @@ $('.word_list').on('click', '.nameeditor .btn-success', function() {
     word: item.find('.nameeditor textarea').val(), info: JSON.stringify(jsonobj(item.find('tbody.info')))};
   if (obj.id == '' || obj.word == '')
     return;
-  $.post('set/word.php', JSON.stringify(obj), function(res) {
-    if (res == '')
+  $.post('set/word.php', JSON.stringify(obj), function(ret) {
+    try {
+      var obj = JSON.parse(ret);
+    } catch (e) {
+      alert(e);
+    }
+    if (obj == null || obj.cnt != 1)
       return;
     // Remove the word if unit is different, otherwise refresh it
-    if (res != unit) {
+    if (obj.unit != unit) {
       refreshUnits(section);
       item.hide(ani, item.remove);
     } else
@@ -541,8 +580,15 @@ $('#word_body .nameeditor .btn-success').click(function() {
   var obj = {id: section, wid: null, unit: $('#word_body .texteditor input').val(), word: $('#word_body .nameeditor textarea').val(), info: JSON.stringify(jsonobj($('#word_info')))};
   if (obj.id == '' || obj.word == '')
     return;
-  $.post('set/word.php', JSON.stringify(obj), function(res) {
-    if (res == unit)
+  $.post('set/word.php', JSON.stringify(obj), function(ret) {
+    try {
+      var obj = JSON.parse(ret);
+    } catch (e) {
+      alert(e);
+    }
+    if (obj == null || obj.cnt != 1)
+      return;
+    if (obj.unit == unit)
       refreshWords(unit);
     else
       refreshUnits(section);
