@@ -5,6 +5,6 @@ if ($db->connect_error)
     die("Connection failed: " . $db->connect_error . "\n");
 $db->query('SET CHARACTER SET utf8');
 
-$res = $db->query("SELECT id, name FROM info")->fetch_all(MYSQLI_ASSOC);
+$res = $db->query("SELECT id, name FROM info ORDER BY LOWER(name)")->fetch_all(MYSQLI_ASSOC);
 echo json_encode($res);
 ?>
