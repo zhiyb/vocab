@@ -63,7 +63,7 @@ function wordDisp(obj) {
 }
 
 function wordElement(word) {
-  return '<li class="list-group-item" wid="' + word.id + '"><h4 class="list-group-item-heading" ' + dispStyle('word') + '>' + disp(word.word) + '<div class="btn-group"><button class="btn btn-sm btn-warning"><span class="fa fa-pencil"></span></button><button class="btn btn-sm btn-info"><span class="fa fa-copy"></span></button></div></h4><p class="list-group-item-text"><table><tbody>' + wordDisp(word) + '</tbody></table></p></li>';
+  return '<li class="list-group-item" wid="' + word.id + '"><h4 class="list-group-item-heading" ' + dispStyle('word') + '>' + disp(word.word) + '<div class="btn-group"><button class="btn btn-sm btn-warning"><span class="fa fa-pencil"></span></button><button class="btn btn-sm btn-info"><span class="fa fa-copy"></span></button></div></h4><p class="list-group-item-text"><table><tbody>' + wordDisp(word) + '</tbody></table></li>';
 }
 // }}}
 
@@ -176,7 +176,7 @@ $('#sectabs').on('click', 'a', function() {
 
   <!-- {{{ Section editor -->
   <div id="edit_section" style="display:none">
-    <p></p>
+    <p>
     <div class="card">
       <div id="section_id" class="card-header bg-warning">Edit section #</div>
       <div class="card-body" id="section_name">
@@ -239,7 +239,7 @@ $('#section_name .nameeditor .btn-danger').click(function() {
   <!-- }}} -->
 
   <!-- {{{ Unit tabs -->
-  <p></p>
+  <p>
   <nav class="nav nav-pills" role="tablist" id="unittabs"></nav>
   <script>
 var unit = '';
@@ -295,7 +295,7 @@ $('#unittabs').on('click', 'a', function() {
         </div>
         <div class="modal-body">
           <script>document.write(textEditor('Unit', ''));</script><p>
-          <div class="input-group"><span class="input-group-addon"><a href="https://gist.github.com/zhiyb/70db96cfedbe494b729db2f4d6c1938d">CSV</a>&nbsp;import</span><input class="form-control" type="file" id="csv_file"></div><p></p>
+          <div class="input-group"><span class="input-group-addon"><a href="https://gist.github.com/zhiyb/70db96cfedbe494b729db2f4d6c1938d">Anki CSV</a>&nbsp;import</span><input class="form-control" type="file" id="csv_file"></div><p>
           <div id="word_list" style="display:none"><ul class="list-group"></ul></div>
         </div>
         <div class="modal-footer">
@@ -324,7 +324,7 @@ function importShowWord(word, eng, kanji, type) {
     e.kanji = kanji;
   if (type)
     e.type = type;
-  return '<li class="list-group-item"><h4 class="list-group-item-heading" ' + dispStyle('word') + '>' + disp(word) + '<div class="btn-group"><button class="btn btn-sm btn-info"><span class="fa fa-copy"></span></button></div></h4><p class="list-group-item-text"><table><tbody>' + importWordTable(e) + '</tbody></table></p></li>';
+  return '<li class="list-group-item"><h4 class="list-group-item-heading" ' + dispStyle('word') + '>' + disp(word) + '<div class="btn-group"><button class="btn btn-sm btn-info"><span class="fa fa-copy"></span></button></div></h4><p class="list-group-item-text"><table><tbody>' + importWordTable(e) + '</tbody></table></li>';
 }
 
 function importCSV(contents) {
@@ -366,7 +366,7 @@ function importUnit() {
   <!-- }}} -->
 
   <!-- {{{ Word list -->
-  <p></p>
+  <p>
   <div id="word_list" style="display:none"><ul class="list-group"></ul></div>
   <script>
 function refreshWords(unit)
@@ -410,7 +410,7 @@ $('#word_list').on('click', '.btn-warning', function() {
       if (obj == null)
         return;
       item.addClass('list-group-item-warning');
-      item.html(textEditor('Unit', unit == '(default)' ? '' : unit) + '<p></p>' + nameEditor('Word', obj.word) + '<p></p><table class="table"><tbody class="jsonedit info">' + jsonedit(obj['info']) + '</tbody></table>');
+      item.html(textEditor('Unit', unit == '(default)' ? '' : unit) + '<p>' + nameEditor('Word', obj.word) + '<p><table class="table"><tbody class="jsonedit info">' + jsonedit(obj['info']) + '</tbody></table>');
       autosize(item.find('textarea'));
     });
   }
@@ -508,13 +508,13 @@ $('#word_list').on('click', '.btn-info', function() {
 
   <!-- {{{ New word editor -->
   <div id="edit_word" style="display:none">
-    <p></p>
+    <p>
     <div class="card">
       <div id="section_id" class="card-header bg-light">Add a new word</div>
       <div id="word_body" style="display:none">
         <div class="card-body">
-          <script>document.write(textEditor('Unit', ''));</script><p></p>
-          <script>document.write(nameEditor('Word', ''));</script><p></p>
+          <script>document.write(textEditor('Unit', ''));</script><p>
+          <script>document.write(nameEditor('Word', ''));</script><p>
           <table class="table"><tbody id="word_info" class="jsonedit">
             <script>document.write(jsonfield('', ''));</script>
           </tbody></table>
