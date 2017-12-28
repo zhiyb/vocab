@@ -1,11 +1,12 @@
 var index = 0;
+var hide = true;
 var words = [];
 
 function start(ws)
 {
     index = 0;
     words = ws;
-    next();
+    show(true);
 
     // Word list
     var html = '';
@@ -33,13 +34,8 @@ function back()
 
 function next()
 {
-    if (index >= words.length) {
-        back();
-        return;
-    }
-    var word = words[index];
-    $('div#card > ul').html(wordElement(word));
     index++;
+    show(true);
 }
 
 function submit(type)
@@ -48,12 +44,19 @@ function submit(type)
         back();
         return;
     }
-    alert(type);
+    //alert(type);
     next();
 }
 
-function show(e)
+function show(h)
 {
+    if (index >= words.length) {
+        back();
+        return;
+    }
+    var word = words[index];
+    $('div#card > ul').html(wordElement(word, h));
+    hide = h;
 }
 
 // Start button
@@ -83,7 +86,7 @@ $('button#submit').click(function() {
 });
 
 // Control buttons
-$('#buttons .btn-primary').click(function() {show(true);});
+$('#buttons .btn-primary').click(function() {show(!hide);});
 $('#buttons .btn-success').click(function() {submit('yes');});
 $('#buttons .btn-warning').click(function() {submit('skip');});
 $('#buttons .btn-danger').click(function() {submit('no');});

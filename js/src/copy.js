@@ -4,7 +4,7 @@ $('#word_copy').on('shown.bs.modal', function() {autosize.update($('#word_copy t
 // Word list 'copy'
 $('.word_list').on('click', '.word_copy', function() {
   var wid = $(this).closest('li').attr('wid');
-  var html = $(this).closest('.list-group-item-heading').html().replace(/<div((?!<\/div>).)*<\/div>/g, '');
+  var html = $(this).closest('.list-group-item-heading').html().replace(/<div((?!<\/div>).)*<\/div>/g, '').replace(/<\/*span[^>]*>/g, '').replace(/\s*style="[^"]*"/g, '');
   var text = html.replace(/<br[^>]*>/g, '\n').replace(/<rp>((?!<\/rp>).)*<\/rp>/g, '').replace(/<rt>((?!<\/rt>).)*<\/rt>/g, '').replace(/<[^>]*>/g, '');
   var ruby = html.replace(/<br[^>]*>/g, '\n').replace(/<rp>[^<]*<\/rp>/g, '').replace(/<ruby>((?!(<rt>|<\/ruby>)).)*<rt>/g, '').replace(/<\/rt>((?!(<rt>|<\/ruby>)).)*<rt>/g, '').replace(/<[^>]*>/g, '');
   var plain = html.replace(/<br[^>]*>/g, '\n').replace(/<\/?rt>|<\/?rp>|<\/?ruby>/g, '');
