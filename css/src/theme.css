@@ -40,10 +40,6 @@ body {
   width: auto;
 }
 
-.list-group-item {
-  padding-bottom: 0px;
-}
-
 .table td.fit, 
 .table th.fit {
   width: 1%;
