@@ -12,6 +12,6 @@ $db->query('SET CHARACTER SET utf8');
 $stmt = $db->prepare('SELECT * FROM info WHERE id = ?');
 $stmt->bind_param('i', $id);
 $stmt->execute();
-$res = $stmt->get_result()->fetch_all(MYSQLI_ASSOC)[0];
+$res = $stmt->get_result()->fetch_assoc();
 echo json_encode($res);
 ?>

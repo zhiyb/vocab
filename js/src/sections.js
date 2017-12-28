@@ -57,6 +57,8 @@ $('#sectabs').on('click', 'a', function() {
   var secid = $(this).attr('sid');
   if (secid == "add")
     addSection();
+  else if (secid == "check")
+    ;
   else if (secid != section) {
     var a = $(this);
     $.getJSON("get/section.php?id=" + secid, function(obj) {
