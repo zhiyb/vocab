@@ -50,36 +50,10 @@ foreach ($secs as $index => $sec) {
 <button id="submit" class="btn btn-success btn-lg btn-block">Start!</button>
 </div>
 
-<script>
-$('button#submit').click(function() {
-    var secs = [];
-    $('li').each(function() {
-        var sec = {id: $(this).attr('id'), units: []};
-        $(this).find('input').each(function() {
-            if (!$(this).is(':checked'))
-                return;
-            sec.units.push({unit: $(this).attr('id')});
-        });
-        if (sec.units.length)
-            secs.push(sec);
-    });
-    if (!secs.length)
-        alert('Please select units');
-    else
-        $.post('get/random.php', JSON.stringify(secs), function(ret) {
-            $('span#log').text(ret);
-            $('div#words').show(ani);
-            $('div#sections').hide(ani);
-            $("html, body").animate({scrollTop: 0}, "slow");
-        });
-});
-</script>
-
-<div id="words" style="display:none">
-</div>
-
+<div id="words" style="display:none"><ul class="list-group"></ul></div>
 <span id="log"></span>
 
+<script src="js/src/cards.js"></script>
 </div>
 
 </body>
