@@ -85,6 +85,9 @@ function show(h)
         back();
         return;
     }
+    var bar = $('div#card .progress-bar');
+    bar.text((index + 1) + '/' + words.length);
+    bar.css('width', ((index + 1) * 100 / words.length) + '%');
     var word = words[index];
     $('div#card > ul').html(wordElement(word, h));
     hide = h;

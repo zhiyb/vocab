@@ -51,6 +51,7 @@ foreach ($secs as $index => $sec) {
 </div>
 
 <div id="card" style="display:none">
+<div class="progress" style="height: 24px;"><div class="progress-bar progress-bar-striped progress-bar-animated bg-info text-dark" role="progressbar" style="width: 100%">1536/2048</div></div><p>
 <ul class="list-group word_list"></ul><p><p>
 <div class="row" id="buttons">
 <div class="col-sm"><button class="btn btn-primary btn-lg btn-block">Show</button></div>
