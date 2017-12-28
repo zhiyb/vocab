@@ -29,9 +29,10 @@ function refreshSections(refresh)
         active = 'active';
         button = sectionEditButton();
       }
-      html = html.concat('<a class="nav-item ' + active + ' nav-link align-self-end" href="#section" section="' + id + '" data-toggle="tab">' + disp(name) + button + '</a>');
+      html = html.concat('<a class="nav-item ' + active + ' nav-link align-self-end" href="#" sid="' + id + '" data-toggle="tab">' + disp(name) + button + '</a>');
     }
-    html = html.concat('<a class="nav-item nav-link align-self-end" href="#section" section="add"><span class="fa fa-plus"></span></a>');
+    html = html.concat('<a class="nav-item nav-link align-self-end" href="#" sid="add"><span class="fa fa-plus"></span></a>');
+    html = html.concat('<a class="nav-item nav-link align-self-end" href="cards.php" target="_blank" sid="check"><span class="fa fa-check-square-o"></span></a>');
     $('#sectabs').html(html);
     if (refresh)
       refreshUnits(null);
@@ -53,7 +54,7 @@ function refreshEditSection()
 
 // Section tabs 'click'
 $('#sectabs').on('click', 'a', function() {
-  var secid = $(this).attr('section');
+  var secid = $(this).attr('sid');
   if (secid == "add")
     addSection();
   else if (secid != section) {
