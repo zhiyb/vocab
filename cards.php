@@ -50,7 +50,44 @@ foreach ($secs as $index => $sec) {
 <button id="submit" class="btn btn-success btn-lg btn-block">Start!</button>
 </div>
 
+<div id="card" style="display:none">
+<ul class="list-group word_list"></ul><p><p>
+<div class="row" id="buttons">
+<div class="col-sm"><button class="btn btn-primary btn-lg btn-block">Show</button></div>
+<div class="col-sm"><button class="btn btn-success btn-lg btn-block">Yes</button></div>
+<div class="col-sm"><button class="btn btn-warning btn-lg btn-block">Skip</button></div>
+<div class="col-sm"><button class="btn btn-danger btn-lg btn-block">No</button></div>
+<div class="col-sm"><button class="btn btn-secondary btn-lg btn-block">Back</button></div>
+</div>
+</div>
 <div id="words" style="display:none"><ul class="list-group"></ul></div>
+
+<!-- Word copying modal dialog -->
+<div id="word_copy" class="modal fade" role="dialog">
+<div class="modal-dialog" role="document">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h4 class="modal-title"></h4>
+      <button type="button" class="close" data-dismiss="modal"><span class="fa fa-times"></span></button>
+    </div>
+    <div class="modal-body">
+      <div class="copy_field">With annotations:
+        <textarea class="form-control" type="text" placeholder="With annotation" rows=1></textarea><p></div>
+      <div class="copy_field">Annotations:
+        <textarea class="form-control" type="text" placeholder="Annotations" rows=1></textarea><p></div>
+      <div class="copy_field">Word:
+        <textarea class="form-control" type="text" placeholder="Word" rows=1></textarea><p></div>
+      <div class="copy_field">HTML:
+        <textarea class="form-control" type="text" placeholder="HTML" rows=1></textarea><p></div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+    </div>
+  </div>
+</div>
+</div>
+<script src="js/copy.min.js"></script>
+
 <span id="log"></span>
 
 <script src="js/src/cards.js"></script>

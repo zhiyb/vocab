@@ -1,19 +1,59 @@
-function start(words)
+var index = 0;
+var words = [];
+
+function start(ws)
 {
-    // Show words
+    index = 0;
+    words = ws;
+    next();
+
+    // Word list
     var html = '';
     var i;
     for (i in words) {
         var word = words[i];
         html = html.concat('<li class="list-group-item">#' + word.id
-            + ' ' + word.word + ' | ' + word.unit + ' #' + word.wid + '</li>');
+            + ' ' + word.word + ' | ' + word.unit + ' #' + word.sid + '</li>');
     }
     $('div#words > ul').html(html);
 
-    // Hide sections, show words
-    $('div#words').show(ani);
+    // Hide unit selection, show word card
+    $('div#card').show(ani);
     $('div#sections').hide(ani);
     $("html, body").animate({scrollTop: 0}, "slow");
+}
+
+function back()
+{
+    // Hide word card, show section selection
+    $('div#sections').show(ani);
+    $('div#card').hide(ani);
+    $("html, body").animate({scrollTop: 0}, "slow");
+}
+
+function next()
+{
+    if (index >= words.length) {
+        back();
+        return;
+    }
+    var word = words[index];
+    $('div#card > ul').html(wordElement(word));
+    index++;
+}
+
+function submit(type)
+{
+    if (index >= words.length) {
+        back();
+        return;
+    }
+    alert(type);
+    next();
+}
+
+function show(e)
+{
 }
 
 // Start button
@@ -35,9 +75,16 @@ $('button#submit').click(function() {
         $.post('get/random.php', JSON.stringify(secs), function(ret) {
             try {
                 var obj = JSON.parse(ret);
+                start(obj);
             } catch (e) {
                 alert(e);
             }
-            start(obj);
         });
 });
+
+// Control buttons
+$('#buttons .btn-primary').click(function() {show(true);});
+$('#buttons .btn-success').click(function() {submit('yes');});
+$('#buttons .btn-warning').click(function() {submit('skip');});
+$('#buttons .btn-danger').click(function() {submit('no');});
+$('#buttons .btn-secondary').click(back);

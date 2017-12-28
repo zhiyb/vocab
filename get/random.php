@@ -23,7 +23,7 @@ function getSID($sid)
 
 function getWords($sid, $unit)
 {
-    $stmt = $GLOBALS['db']->prepare('SELECT CAST(' . $sid . ' AS UNSIGNED) AS wid, id, unit, word, info FROM `w_' . $sid . '` WHERE unit = ?');
+    $stmt = $GLOBALS['db']->prepare('SELECT CAST(' . $sid . ' AS UNSIGNED) AS sid, id, unit, word, info FROM `w_' . $sid . '` WHERE unit = ?');
     $stmt->bind_param('s', $unit);
     $stmt->execute();
     return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);

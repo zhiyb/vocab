@@ -1,4 +1,5 @@
 var ani = 120;  // Animation speed
+var style = {};
 
 function nameEditor(name, value)
 {
@@ -37,6 +38,7 @@ function wordDisp(obj) {
     info = JSON.parse(obj.info);
   } catch (e) {
     alert(e);
+    return e;
   };
   var html = '<table class="table table-condensed"><tbody>';
   for (field in info) {
@@ -46,7 +48,7 @@ function wordDisp(obj) {
 }
 
 function wordElement(word) {
-  return '<li class="list-group-item" wid="' + word.id + '"><h4 class="list-group-item-heading" ' + dispStyle('word') + '>' + disp(word.word) + '<div class="btn-group"><button class="btn btn-sm btn-warning"><span class="fa fa-pencil"></span></button><button class="btn btn-sm btn-info"><span class="fa fa-copy"></span></button></div></h4><p class="list-group-item-text"><table><tbody>' + wordDisp(word) + '</tbody></table></li>';
+  return '<li class="list-group-item" wid="' + word.id + '"><h4 class="list-group-item-heading" ' + dispStyle('word') + '>' + disp(word.word) + '<div class="btn-group"><button class="btn btn-sm btn-warning"><span class="fa fa-pencil"></span></button><button class="btn btn-sm btn-info word_copy"><span class="fa fa-copy"></span></button></div></h4><p class="list-group-item-text"><table><tbody>' + wordDisp(word) + '</tbody></table></li>';
 }
 
 // JSON editor functions

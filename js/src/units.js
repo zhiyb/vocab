@@ -39,3 +39,19 @@ function switchUnit(u, act) {
   $('#unittabs nav-link').removeClass("active");
   $('#unittabs nav-link[name="' + unit + '"]').addClass("active");
 }
+
+// Unit tabs 'click'
+$('#unittabs').on('click', 'a', function() {
+  if ($(this).attr('type') == 'import') {
+    importUnit();
+    return;
+  }
+  switchUnit($(this).attr('name'), false);
+});
+
+// Unit tabs 'import'
+$('#unit_import').on('shown.bs.modal', function() {autosize.update($('#unit_import textarea'));});
+// Unit import Anki CSV file 'open'
+$('#unit_import #csv_file').on('change', function(e) {importCSVFile(e.target.files[0]);});
+// Unit import button 'submit'
+$('#unit_import .btn-primary').click(importSubmit);
