@@ -6,7 +6,7 @@ function start(ws)
 {
     index = 0;
     words = ws;
-    show(true);
+    update();
 
     // Word list
     var html = '';
@@ -32,10 +32,32 @@ function back()
     $("html, body").animate({scrollTop: 0}, "slow");
 }
 
-function next()
+function update()
 {
-    index++;
+    if (index >= words.length) {
+        back();
+        return;
+    }
+    var word = words[index];
+    var obj = {id: word.id, sid: word.sid};
+    $.post('get/stats.php', JSON.stringify(obj), function(ret) {
+        try {
+            updateButtons(JSON.parse(ret));
+        } catch (e) {
+            alert(e);
+        }
+    });
     show(true);
+}
+
+function updateButtons(stats)
+{
+    if (!stats)
+        stats = {yes: 0, skip: 0, no: 0};
+    var num = function(i) {return i ? ' (' + i + ')' : '';};
+    $('#buttons .btn-success').text('Yes' + num(stats.yes));
+    $('#buttons .btn-warning').text('Skip' + num(stats.skip));
+    $('#buttons .btn-danger').text('No' + num(stats.no));
 }
 
 function submit(type)
@@ -44,8 +66,17 @@ function submit(type)
         back();
         return;
     }
-    //alert(type);
-    next();
+    var word = words[index];
+    var obj = {id: word.id, sid: word.sid, field: type};
+    $.post('set/stats_increment.php', JSON.stringify(obj), function(ret) {
+        try {
+            updateButtons(JSON.parse(ret));
+        } catch (e) {
+            alert(e);
+        }
+        index++;
+        update();
+    });
 }
 
 function show(h)

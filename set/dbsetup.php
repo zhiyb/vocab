@@ -23,4 +23,15 @@ if ($db->query("CREATE TABLE IF NOT EXISTS info (
     style TEXT, weight TEXT)
     CHARACTER SET = utf8 COLLATE utf8_bin") !== TRUE)
     die("Error creating table vocab->info: " . $db->error . "\n");
+
+if ($db->query("CREATE TABLE IF NOT EXISTS user (
+    id INT UNSIGNED NOT NULL,
+    sid INT UNSIGNED NOT NULL,
+    yes INT UNSIGNED NOT NULL DEFAULT 0,
+    skip INT UNSIGNED NOT NULL DEFAULT 0,
+    no INT UNSIGNED NOT NULL DEFAULT 0,
+    time TIMESTAMP,
+    PRIMARY KEY (id, sid))
+    CHARACTER SET = utf8 COLLATE utf8_bin") !== TRUE)
+    die("Error creating table vocab->user: " . $db->error . "\n");
 ?>
