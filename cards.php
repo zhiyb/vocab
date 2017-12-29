@@ -36,7 +36,7 @@ $db->query('SET CHARACTER SET utf8');
 // User stats
 $stmt = $db->prepare('SELECT `sid`, `unit`,
     SUM(`sum` > 0) AS `pass`, SUM(`sum` < 0) AS `fail` FROM (
-        SELECT `sid`, `unit`, ' . $algo . ' AS `sum` FROM (
+        SELECT `sid`, `unit`, ' . $stat . ' AS `sum` FROM (
             SELECT `user`.`id`, `sid`, `unit`, `yes`, `skip`, `no`, `time` FROM `words`
             RIGHT JOIN `user` ON `words`.`id` = `user`.`id`
         ) AS `res`
