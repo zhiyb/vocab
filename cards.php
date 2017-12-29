@@ -33,14 +33,29 @@ $db->query('SET CHARACTER SET utf8');
 <ul class="list-group">
 <li class="list-group-item list-group-item-primary">Section list</li>
 <?php
+// User stats
+$stmt = $db->prepare('SELECT `sid`, `unit`, SUM(`pass`) AS `pass`, SUM(`fail`) AS `fail` FROM ( SELECT `sid`, `unit`, (`type` = 1) AS `pass`, (`type` = -1) AS `fail` FROM ( SELECT `sid`, `unit`, LEAST( GREATEST( CAST(`yes` AS SIGNED) - CAST(`no` AS SIGNED), -1 ), 1 ) AS `type` FROM ( SELECT `user`.`id`, `sid`, `unit`, `yes`, `skip`, `no`, `time` FROM `words` RIGHT JOIN `user` ON `words`.`id` = `user`.`id` ) AS `res` HAVING (`type` <> 0) ) AS `res` ) AS `res` GROUP BY `sid`, `unit` ORDER BY `sid`, LOWER(`unit`)');
+if ($stmt->execute() !== true)
+    die($stmt->error);
+$stats = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+
 // Enumerate sections and units
 $secs = $GLOBALS['db']->query("SELECT * FROM `info` ORDER BY LOWER(`name`)")->fetch_all(MYSQLI_ASSOC);
 foreach ($secs as $index => $sec) {
-    $units = $GLOBALS['db']->query('SELECT DISTINCT `unit` FROM `words` WHERE `sid` = ' . $sec['id'] . ' ORDER BY LOWER(`unit`)')->fetch_all(MYSQLI_ASSOC);
+    $units = $GLOBALS['db']->query('SELECT `unit`, COUNT(*) AS `cnt` FROM `words` WHERE `sid` = ' . $sec['id'] . ' GROUP BY `unit` ORDER BY LOWER(`unit`)')->fetch_all(MYSQLI_ASSOC);
     echo '<li class="list-group-item" id="' . $sec['id'] . '"><script>document.write(disp("' . $sec['name'] . '"));</script>';
-    echo '<div data-toggle="buttons">';
+    echo '<div class="row justify-content-start align-items-end">';
     foreach ($units as $unit) {
-        echo '<label class="btn btn-primary"><input id="' . $unit['unit'] . '" type="checkbox" autocomplete="off"><script>document.write(disp("' . $unit['unit'] . '"));</script></label>&nbsp;';
+        $pass = 0.0;
+        $fail = 0.0;
+        foreach ($stats as $index => $stat)
+            if ($stat['sid'] == $sec['id'] && $stat['unit'] == $unit['unit']) {
+                $pass = (float)$stat['pass'] * 100 / (float)$unit['cnt'];
+                $fail = (float)$stat['fail'] * 100 / (float)$unit['cnt'];
+                unset($stats[$index]);
+                break;
+            }
+        echo '<div class="col-auto"><div data-toggle="buttons" class="progress-btn"><div class="progress"><div class="progress-bar bg-success" role="progressbar" style="width: ' . $pass . '%"></div><div class="progress-bar bg-danger" role="progressbar" style="width: ' . $fail . '%"></div></div><label class="btn btn-sm btn-outline-warning text-dark"><script>document.write(disp("' . $unit['unit'] . '"));</script><input id="' . $unit['unit'] . '" type="checkbox" autocomplete="off"></label></div></div>';
     }
     echo '</div></li>';
     $secs[$index]['units'] = $units;
@@ -55,7 +70,7 @@ foreach ($secs as $sec)
 echo json_encode($sections);
 ?>;
 </script>
-<button id="submit" class="btn btn-success btn-lg btn-block">Start!</button>
+<button id="submit" class="btn btn-primary btn-lg btn-block">Start!</button>
 </div>
 
 <div id="card" style="display:none">

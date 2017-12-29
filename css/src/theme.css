@@ -72,8 +72,32 @@ td {
   word-break: break-word;
 }
 
+.col-auto {
+  padding-right: 0px;
+}
+
 .input-group-btn {
   vertical-align: bottom;
+}
+
+.progress-btn {
+  position: relative;
+  margin-bottom: 1em;
+  margin-left: 0;
+  margin-right: 0;
+  z-index: 0;
+}
+
+.progress-btn > .progress {
+  position: absolute;
+  z-index: -1;
+  height: 100%;
+  width: 100%;
+  background: none;
+}
+
+.progress-btn > .btn {
+  margin-bottom: 0px;
 }
 
 ruby {
