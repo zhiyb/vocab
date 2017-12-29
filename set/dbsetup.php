@@ -27,7 +27,7 @@ if ($db->query("CREATE TABLE IF NOT EXISTS info (
 if ($db->query("CREATE TABLE IF NOT EXISTS `words` (
     `id` INT UNSIGNED NOT NULL AUTO_INCREMENT UNIQUE,
     `sid` INT UNSIGNED NOT NULL,
-    `unit` TINYTEXT NOT NULL,
+    `unit` VARCHAR(32) NOT NULL,
     `word` TEXT NOT NULL,
     `info` TEXT,
     PRIMARY KEY (`id`),

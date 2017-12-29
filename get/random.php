@@ -6,33 +6,36 @@ $secs = json_decode(file_get_contents("php://input"), true);
 if ($secs == null)
     die();
 
+require 'algorithm.php';
 require '../dbconf.php';
 $db = new mysqli($dbhost, $dbuser, $dbpw, $dbprefix . "vocab");
 if ($db->connect_error)
     die("Connection failed: " . $db->connect_error . "\n");
 $db->query('SET CHARACTER SET utf8');
 
-// Enumerate words
-function getWords($sid, $unit)
-{
-    $stmt = $GLOBALS['db']->prepare('SELECT * FROM `words` WHERE `sid` = ? AND `unit` = ?');
-    $stmt->bind_param('is', $sid, $unit);
-    $stmt->execute();
-    return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
-}
+// Create temporary table for section & unit pairs
+if ($db->query('CREATE TEMPORARY TABLE IF NOT EXISTS `sel` (
+        `sid` INT UNSIGNED NOT NULL,
+        `unit` VARCHAR(32) NOT NULL,
+        PRIMARY KEY (`sid`, `unit`)
+    ) CHARACTER SET = utf8 COLLATE utf8_bin') !== true)
+    die($db->error);
 
+// Insert section & unit pairs
+$stmt = $GLOBALS['db']->prepare('INSERT INTO `sel` (`sid`, `unit`) VALUES (?, ?)');
 $words = array();
 foreach ($secs as $sec) {
-    foreach ($sec['units'] as $index => $unit) {
-        $uwords = getWords($sec['sid'], $unit['unit']);
-        if ($uwords != null)
-            $words = array_merge($words, $uwords);
+    foreach ($sec['units'] as $unit) {
+        $stmt->bind_param('is', $sec['sid'], $unit['unit']);
+        $stmt->execute();
     }
 }
 
-// Randomise words
-shuffle($words);
-
-// Output
+// Enumerate words
+$words = $db->query('SELECT `words`.`id`, `sid`, `unit`, `word`, `info`, '
+    . $algo .  ' AS `weight` FROM `user` RIGHT JOIN (
+        SELECT `id`, `words`.`sid`, `words`.`unit`, `word`, `info` FROM `words`
+        RIGHT JOIN `sel` ON `words`.`sid` = `sel`.`sid` AND `words`.`unit` = `sel`.`unit`
+    ) AS `words` ON `user`.`id` = `words`.`id` ORDER BY `weight`, RAND()')->fetch_all(MYSQLI_ASSOC);
 echo json_encode($words);
 ?>
