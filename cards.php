@@ -48,11 +48,11 @@ foreach ($secs as $index => $sec) {
     foreach ($units as $unit) {
         $pass = 0.0;
         $fail = 0.0;
-        foreach ($stats as $index => $stat)
+        foreach ($stats as $i => $stat)
             if ($stat['sid'] == $sec['id'] && $stat['unit'] == $unit['unit']) {
                 $pass = (float)$stat['pass'] * 100 / (float)$unit['cnt'];
                 $fail = (float)$stat['fail'] * 100 / (float)$unit['cnt'];
-                unset($stats[$index]);
+                unset($stats[$i]);
                 break;
             }
         echo '<div class="col-auto"><div data-toggle="buttons" class="progress-btn"><div class="progress"><div class="progress-bar bg-success" role="progressbar" style="width: ' . $pass . '%"></div><div class="progress-bar bg-danger" role="progressbar" style="width: ' . $fail . '%"></div></div><label class="btn btn-sm btn-outline-warning btn-static text-dark"><script>document.write(disp("' . $unit['unit'] . '"));</script><input id="' . $unit['unit'] . '" type="checkbox" autocomplete="off"></label></div></div>';
