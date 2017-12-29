@@ -95,12 +95,10 @@ echo json_encode($sections);
   </div>
 </div>
 </div>
-<script src="js/copy.min.js"></script>
 
-<span id="log"></span>
-
-<script src="js/cards.min.js"></script>
 </div>
-
+<script src="js/copy.min.js"></script>
+<script src="js/cards.min.js"></script>
+<script src="js/words.min.js"></script>
 </body>
 </html>

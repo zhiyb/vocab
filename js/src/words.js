@@ -16,13 +16,18 @@ function refreshWords(unit)
 
 function refreshWord(item)
 {
-  $.getJSON('get/word.php?id=' + section + '&wid=' + item.attr('wid'), function(obj) {
-    if (obj == null) {
+  $.getJSON('get/word.php?sid=' + section + '&id=' + item.attr('wid'), function(word) {
+    if (word == null) {
       item.hide(ani, item.remove);
       return;
     }
     item.removeClass('list-group-item-warning');
-    item.replaceWith(wordElement(obj));
+    var h = false;
+    if (typeof hide !== 'undefined')
+      h = hide;
+    item.replaceWith(wordElement(word, h));
+    if (typeof words !== 'undefined')
+      words[index] = word;
   });
 }
 
@@ -44,11 +49,11 @@ $('.word_list').on('click', '.btn-warning', function() {
   } else {
     // Display editing panel
     var wid = item.attr('wid');
-    $.getJSON('get/word.php?id=' + section + '&wid=' + wid, function(obj) {
-      if (obj == null)
+    $.getJSON('get/word.php?sid=' + section + '&id=' + wid, function(word) {
+      if (word == null)
         return;
       item.addClass('list-group-item-warning');
-      item.html(textEditor('Unit', unit == '(default)' ? '' : unit) + '<p>' + nameEditor('Word', obj.word) + '<p><table class="table"><tbody class="jsonedit info">' + jsonedit(obj['info']) + '</tbody></table>');
+      item.html(textEditor('Unit', word.unit == '(default)' ? '' : word.unit) + '<p>' + nameEditor('Word', word.word) + '<p><table class="table"><tbody class="jsonedit info">' + jsonedit(word.info) + '</tbody></table>');
       autosize(item.find('textarea'));
     });
   }

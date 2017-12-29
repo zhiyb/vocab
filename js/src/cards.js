@@ -1,6 +1,8 @@
 var index = 0;
 var hide = true;
 var words = [];
+var section = 0;
+var unit = "";
 
 function start(ws)
 {
@@ -49,6 +51,8 @@ function update()
   });
 
   // Section info
+  section = word.sid;
+  unit = word.unit;
   try {
     style = JSON.parse(sections[word.sid].style);
   } catch (e) {
@@ -99,6 +103,11 @@ function show(h)
   var word = words[index];
   $('div#card > ul').html(wordElement(word, h));
   hide = h;
+}
+
+function refreshUnits(sid)
+{
+  refreshWord($('.word_list li[wid]:first'));
 }
 
 // Start button
