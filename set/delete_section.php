@@ -2,8 +2,8 @@
 if ($_SERVER["REQUEST_METHOD"] !== "POST")
     die();
 
-$id = $_POST["id"];
-if ($id == null)
+$sid = $_POST["id"];
+if ($sid == null)
     die();
 
 require '../dbconf.php';
@@ -12,21 +12,13 @@ if ($db->connect_error)
     die("Connection failed: " . $db->connect_error . "\n");
 $db->query('SET CHARACTER SET utf8');
 
-function getID($id) {
-    $stmt = $GLOBALS['db']->prepare('SELECT id FROM info WHERE id = ?');
-    $stmt->bind_param('i', $id);
-    $stmt->execute();
-    return $stmt->get_result()->fetch_assoc()["id"];
-}
+$stmt = $db->prepare('DELETE FROM `info` WHERE `id` = ?');
+$stmt->bind_param('i', $sid);
+if ($stmt->execute() !== TRUE)
+    die($stmt->error);
 
-$id = getID($id);
-if ($id == null)
-    die($db->error);
-
-$stmt = $db->prepare('DELETE FROM info WHERE id = ?');
-$stmt->bind_param('i', $id);
-$stmt->execute();
-
-$table = 'w_' . $id;
-$db->query('DROP TABLE w_' . $id);
+$stmt = $db->prepare('DELETE FROM `words` WHERE `sid` = ?');
+$stmt->bind_param('i', $sid);
+if ($stmt->execute() !== TRUE)
+    die($stmt->error);
 ?>

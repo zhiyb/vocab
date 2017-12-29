@@ -12,32 +12,22 @@ if ($db->connect_error)
     die("Connection failed: " . $db->connect_error . "\n");
 $db->query('SET CHARACTER SET utf8');
 
-function getID($name) {
-    $stmt = $GLOBALS['db']->prepare('SELECT id FROM info WHERE name = ?');
+function getSID($name) {
+    $stmt = $GLOBALS['db']->prepare('SELECT `id` FROM `info` WHERE `name` = ?');
     $stmt->bind_param('s', $name);
     $stmt->execute();
-    return $stmt->get_result()->fetch_assoc()["id"];
+    return $stmt->get_result()->fetch_assoc()['id'];
 }
 
 // Check for existance
-if (getID($name) !== null) {
+if (getSID($name) !== null) {
     // Entry exists
-    die("Error: Name " . $name . " exists");
+    die("Section $name exists");
 } else {
     // Add entry
-    $stmt = $db->prepare('INSERT INTO info (name) VALUES (?)');
+    $stmt = $db->prepare('INSERT INTO `info` (`name`) VALUES (?)');
     $stmt->bind_param('s', $name);
     if ($stmt->execute() !== TRUE)
-        die("Error: " . $stmt->error);
-    $id = getID($name);
-    if ($id == null)
-        die($db->error);
+        die($stmt->error);
 }
-
-// Create related tables
-if ($db->query('CREATE TABLE IF NOT EXISTS `w_' . $id . '` (
-    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    unit TINYTEXT NOT NULL, word TEXT NOT NULL, info TEXT)
-    CHARACTER SET = utf8 COLLATE utf8_bin') !== true)
-    die($db->error);
 ?>

@@ -1,6 +1,6 @@
 <?php
-$id = $_GET["id"];
-if ($id == null)
+$sid = $_GET["id"];
+if ($sid == null)
     die();
 
 require '../dbconf.php';
@@ -9,16 +9,10 @@ if ($db->connect_error)
     die("Connection failed: " . $db->connect_error . "\n");
 $db->query('SET CHARACTER SET utf8');
 
-function getID($id) {
-    $stmt = $GLOBALS['db']->prepare('SELECT id FROM info WHERE id = ?');
-    $stmt->bind_param('i', $id);
-    $stmt->execute();
-    return $stmt->get_result()->fetch_assoc()["id"];
-}
-
-$id = getID($id);
-if ($id == null)
+$stmt = $db->prepare('SELECT DISTINCT `unit` FROM `words` WHERE `sid` = ? ORDER BY LOWER(`unit`)');
+if ($stmt == false)
     die($db->error);
-$res = $db->query('SELECT DISTINCT unit FROM `w_' . $id . '` ORDER BY LOWER(unit)')->fetch_all(MYSQLI_NUM);
-echo json_encode($res);
+$stmt->bind_param('i', $sid);
+$stmt->execute();
+echo json_encode($stmt->get_result()->fetch_all(MYSQLI_NUM));
 ?>

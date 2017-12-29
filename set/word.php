@@ -6,12 +6,12 @@ $json = json_decode(file_get_contents("php://input"), true);
 if ($json == null)
     die();
 
-$id = $json['id'];
-$wid = $json['wid'];
+$sid = $json['id'];
+$id = $json['wid'];
 $unit = $json['unit'];
 $word = $json['word'];
 $info = $json['info'];
-if ($id == '' || $word == '')
+if ($sid == '' || $word == '')
     die();
 if ($unit == '')
     $unit = '(default)';
@@ -22,21 +22,10 @@ if ($db->connect_error)
     die("Connection failed: " . $db->connect_error . "\n");
 $db->query('SET CHARACTER SET utf8');
 
-function getID($id) {
-    $stmt = $GLOBALS['db']->prepare('SELECT id FROM info WHERE id = ?');
-    $stmt->bind_param('i', $id);
-    $stmt->execute();
-    return $stmt->get_result()->fetch_assoc()["id"];
-}
-
-$id = getID($id);
-if ($id == null)
-    die();
-
 $ret['unit'] = $unit;
 $ret['cnt'] = 0;
-$stmt = $db->prepare('REPLACE INTO `w_' . $id . '` VALUES (?, ?, ?, ?)');
-$stmt->bind_param('isss', $wid, $unit, $word, $info);
+$stmt = $db->prepare('INSERT INTO `words` (`id`, `sid`, `unit`, `word`, `info`) VALUES (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE `sid` = ?, `unit` = ?, `word` = ?, `info` = ?');
+$stmt->bind_param('iisssisss', $id, $sid, $unit, $word, $info, $sid, $unit, $word, $info);
 if ($stmt->execute() === true)
     $ret['cnt']++;
 echo json_encode($ret);

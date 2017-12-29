@@ -24,14 +24,25 @@ if ($db->query("CREATE TABLE IF NOT EXISTS info (
     CHARACTER SET = utf8 COLLATE utf8_bin") !== TRUE)
     die("Error creating table vocab->info: " . $db->error . "\n");
 
-if ($db->query("CREATE TABLE IF NOT EXISTS user (
-    id INT UNSIGNED NOT NULL,
-    sid INT UNSIGNED NOT NULL,
-    yes INT UNSIGNED NOT NULL DEFAULT 0,
-    skip INT UNSIGNED NOT NULL DEFAULT 0,
-    no INT UNSIGNED NOT NULL DEFAULT 0,
-    time TIMESTAMP,
-    PRIMARY KEY (id, sid))
-    CHARACTER SET = utf8 COLLATE utf8_bin") !== TRUE)
+if ($db->query("CREATE TABLE IF NOT EXISTS `words` (
+    `id` INT UNSIGNED NOT NULL AUTO_INCREMENT UNIQUE,
+    `sid` INT UNSIGNED NOT NULL,
+    `unit` TINYTEXT NOT NULL,
+    `word` TEXT NOT NULL,
+    `info` TEXT,
+    PRIMARY KEY (`id`),
+    FOREIGN KEY (`sid`) REFERENCES `info`(`id`)
+    ) CHARACTER SET = utf8 COLLATE utf8_bin") !== TRUE)
+    die("Error creating table vocab->info: " . $db->error . "\n");
+
+if ($db->query("CREATE TABLE IF NOT EXISTS `user` (
+    `id` INT UNSIGNED NOT NULL,
+    `yes` INT UNSIGNED NOT NULL DEFAULT 0,
+    `skip` INT UNSIGNED NOT NULL DEFAULT 0,
+    `no` INT UNSIGNED NOT NULL DEFAULT 0,
+    `time` TIMESTAMP,
+    PRIMARY KEY (`id`),
+    FOREIGN KEY (`id`) REFERENCES `words`(`id`)
+    ) CHARACTER SET = utf8 COLLATE utf8_bin") !== TRUE)
     die("Error creating table vocab->user: " . $db->error . "\n");
 ?>

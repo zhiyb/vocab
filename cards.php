@@ -34,9 +34,9 @@ $db->query('SET CHARACTER SET utf8');
 <li class="list-group-item list-group-item-primary">Section list</li>
 <?php
 // Enumerate sections and units
-$secs = $GLOBALS['db']->query("SELECT * FROM info ORDER BY LOWER(name)")->fetch_all(MYSQLI_ASSOC);
+$secs = $GLOBALS['db']->query("SELECT * FROM `info` ORDER BY LOWER(`name`)")->fetch_all(MYSQLI_ASSOC);
 foreach ($secs as $index => $sec) {
-    $units = $GLOBALS['db']->query('SELECT DISTINCT unit FROM `w_' . $sec['id'] . '` ORDER BY LOWER(unit)')->fetch_all(MYSQLI_ASSOC);
+    $units = $GLOBALS['db']->query('SELECT DISTINCT `unit` FROM `words` WHERE `sid` = ' . $sec['id'] . ' ORDER BY LOWER(`unit`)')->fetch_all(MYSQLI_ASSOC);
     echo '<li class="list-group-item" id="' . $sec['id'] . '"><script>document.write(disp("' . $sec['name'] . '"));</script>';
     echo '<div data-toggle="buttons">';
     foreach ($units as $unit) {

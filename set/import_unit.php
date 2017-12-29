@@ -6,10 +6,10 @@ $json = json_decode(file_get_contents("php://input"), true);
 if ($json == null)
     die();
 
-$id = $json['id'];
+$sid = $json['id'];
 $unit = $json['unit'];
 $words = $json['payload'];
-if ($id == '' || $words == '')
+if ($sid == '' || $words == '')
     die();
 if ($unit == '')
     $unit = '(default)';
@@ -20,25 +20,14 @@ if ($db->connect_error)
     die("Connection failed: " . $db->connect_error . "\n");
 $db->query('SET CHARACTER SET utf8');
 
-function getID($id) {
-    $stmt = $GLOBALS['db']->prepare('SELECT id FROM info WHERE id = ?');
-    $stmt->bind_param('i', $id);
-    $stmt->execute();
-    return $stmt->get_result()->fetch_assoc()["id"];
-}
-
-$id = getID($id);
-if ($id == null)
-    die();
-
 $ret['unit'] = $unit;
 $ret['cnt'] = 0;
-$stmt = $db->prepare('REPLACE INTO `w_' . $id . '` VALUES (0, ?, ?, ?)');
+$stmt = $db->prepare('INSERT INTO `words` (`sid`, `unit`, `word`, `info`) VALUES (?, ?, ?, ?)');
 foreach ($words as $e) {
     $word = $e['word'];
     unset($e['word']);
     $info = json_encode($e);
-    $stmt->bind_param('sss', $unit, $word, $info);
+    $stmt->bind_param('isss', $sid, $unit, $word, $info);
     if ($stmt->execute() === true)
         $ret['cnt']++;
 }

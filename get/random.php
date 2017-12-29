@@ -13,29 +13,18 @@ if ($db->connect_error)
 $db->query('SET CHARACTER SET utf8');
 
 // Enumerate words
-function getSID($sid)
-{
-    $stmt = $GLOBALS['db']->prepare('SELECT id FROM info WHERE id = ?');
-    $stmt->bind_param('i', $sid);
-    $stmt->execute();
-    return $stmt->get_result()->fetch_assoc()['id'];
-}
-
 function getWords($sid, $unit)
 {
-    $stmt = $GLOBALS['db']->prepare('SELECT CAST(' . $sid . ' AS UNSIGNED) AS sid, id, unit, word, info FROM `w_' . $sid . '` WHERE unit = ?');
-    $stmt->bind_param('s', $unit);
+    $stmt = $GLOBALS['db']->prepare('SELECT * FROM `words` WHERE `sid` = ? AND `unit` = ?');
+    $stmt->bind_param('is', $sid, $unit);
     $stmt->execute();
     return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 }
 
 $words = array();
 foreach ($secs as $sec) {
-    $sid = getSID($sec['id']);
-    if ($sid == null)
-        continue;
     foreach ($sec['units'] as $index => $unit) {
-        $uwords = getWords($sid, $unit['unit']);
+        $uwords = getWords($sec['id'], $unit['unit']);
         if ($uwords != null)
             $words = array_merge($words, $uwords);
     }
