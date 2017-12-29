@@ -31,7 +31,7 @@ if ($db->query("CREATE TABLE IF NOT EXISTS `words` (
     `word` TEXT NOT NULL,
     `info` TEXT,
     PRIMARY KEY (`id`),
-    FOREIGN KEY (`sid`) REFERENCES `info`(`id`)
+    FOREIGN KEY (`sid`) REFERENCES `info`(`id`) ON DELETE CASCADE ON UPDATE CASCADE
     ) CHARACTER SET = utf8 COLLATE utf8_bin") !== TRUE)
     die("Error creating table vocab->info: " . $db->error . "\n");
 
@@ -42,7 +42,7 @@ if ($db->query("CREATE TABLE IF NOT EXISTS `user` (
     `no` INT UNSIGNED NOT NULL DEFAULT 0,
     `time` TIMESTAMP,
     PRIMARY KEY (`id`),
-    FOREIGN KEY (`id`) REFERENCES `words`(`id`)
+    FOREIGN KEY (`id`) REFERENCES `words`(`id`) ON DELETE CASCADE ON UPDATE CASCADE
     ) CHARACTER SET = utf8 COLLATE utf8_bin") !== TRUE)
     die("Error creating table vocab->user: " . $db->error . "\n");
 ?>

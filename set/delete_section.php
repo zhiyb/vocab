@@ -16,9 +16,4 @@ $stmt = $db->prepare('DELETE FROM `info` WHERE `id` = ?');
 $stmt->bind_param('i', $sid);
 if ($stmt->execute() !== TRUE)
     die($stmt->error);
-
-$stmt = $db->prepare('DELETE FROM `words` WHERE `sid` = ?');
-$stmt->bind_param('i', $sid);
-if ($stmt->execute() !== TRUE)
-    die($stmt->error);
 ?>
