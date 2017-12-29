@@ -55,7 +55,7 @@ foreach ($secs as $index => $sec) {
                 unset($stats[$index]);
                 break;
             }
-        echo '<div class="col-auto"><div data-toggle="buttons" class="progress-btn"><div class="progress"><div class="progress-bar bg-success" role="progressbar" style="width: ' . $pass . '%"></div><div class="progress-bar bg-danger" role="progressbar" style="width: ' . $fail . '%"></div></div><label class="btn btn-sm btn-outline-warning text-dark"><script>document.write(disp("' . $unit['unit'] . '"));</script><input id="' . $unit['unit'] . '" type="checkbox" autocomplete="off"></label></div></div>';
+        echo '<div class="col-auto"><div data-toggle="buttons" class="progress-btn"><div class="progress"><div class="progress-bar bg-success" role="progressbar" style="width: ' . $pass . '%"></div><div class="progress-bar bg-danger" role="progressbar" style="width: ' . $fail . '%"></div></div><label class="btn btn-sm btn-outline-warning btn-static text-dark"><script>document.write(disp("' . $unit['unit'] . '"));</script><input id="' . $unit['unit'] . '" type="checkbox" autocomplete="off"></label></div></div>';
     }
     echo '</div></li>';
     $secs[$index]['units'] = $units;

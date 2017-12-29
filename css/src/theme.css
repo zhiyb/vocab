@@ -36,6 +36,10 @@ body {
   margin: 0px 0px 16px 16px;
 }
 
+.btn-static:hover {
+  background: none;
+}
+
 .theme-showcase .navbar .container {
   width: auto;
 }
