@@ -9,7 +9,7 @@ function refreshUnits(secid) {
   }
   if (secid != section)
       unit = '';
-  $.getJSON('get/unit_list.php?id=' + secid, function(array) {
+  $.getJSON('get/unit_list.php?sid=' + secid, function(array) {
     var found = false;
     var html = '';
     for (i in array) {

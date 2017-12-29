@@ -2,7 +2,7 @@
 if ($_SERVER["REQUEST_METHOD"] !== "POST")
     die();
 
-$sid = $_POST["id"];
+$sid = $_POST["sid"];
 if ($sid == null)
     die();
 
@@ -12,7 +12,7 @@ if ($db->connect_error)
     die("Connection failed: " . $db->connect_error . "\n");
 $db->query('SET CHARACTER SET utf8');
 
-$stmt = $db->prepare('DELETE FROM `info` WHERE `id` = ?');
+$stmt = $db->prepare('DELETE FROM `info` WHERE `sid` = ?');
 $stmt->bind_param('i', $sid);
 if ($stmt->execute() !== TRUE)
     die($stmt->error);

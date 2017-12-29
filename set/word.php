@@ -6,7 +6,7 @@ $json = json_decode(file_get_contents("php://input"), true);
 if ($json == null)
     die();
 
-$sid = $json['id'];
+$sid = $json['sid'];
 $id = $json['wid'];
 $unit = $json['unit'];
 $word = $json['word'];

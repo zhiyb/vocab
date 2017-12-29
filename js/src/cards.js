@@ -114,11 +114,11 @@ function refreshUnits(sid)
 $('button#submit').click(function() {
   var secs = [];
   $('li').each(function() {
-    var sec = {id: $(this).attr('id'), units: []};
+    var sec = {sid: $(this).attr('sid'), units: []};
     $(this).find('input').each(function() {
       if (!$(this).is(':checked'))
         return;
-      sec.units.push({unit: $(this).attr('id')});
+      sec.units.push({unit: $(this).attr('unit')});
     });
     if (sec.units.length)
       secs.push(sec);

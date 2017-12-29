@@ -42,20 +42,20 @@ $stats = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 // Enumerate sections and units
 $secs = $GLOBALS['db']->query("SELECT * FROM `info` ORDER BY LOWER(`name`)")->fetch_all(MYSQLI_ASSOC);
 foreach ($secs as $index => $sec) {
-    $units = $GLOBALS['db']->query('SELECT `unit`, COUNT(*) AS `cnt` FROM `words` WHERE `sid` = ' . $sec['id'] . ' GROUP BY `unit` ORDER BY LOWER(`unit`)')->fetch_all(MYSQLI_ASSOC);
-    echo '<li class="list-group-item" id="' . $sec['id'] . '"><script>document.write(disp("' . $sec['name'] . '"));</script>';
+    $units = $GLOBALS['db']->query('SELECT `unit`, COUNT(*) AS `cnt` FROM `words` WHERE `sid` = ' . $sec['sid'] . ' GROUP BY `unit` ORDER BY LOWER(`unit`)')->fetch_all(MYSQLI_ASSOC);
+    echo '<li class="list-group-item" sid="' . $sec['sid'] . '"><script>document.write(disp("' . $sec['name'] . '"));</script>';
     echo '<div class="row justify-content-start align-items-end">';
     foreach ($units as $unit) {
         $pass = 0.0;
         $fail = 0.0;
         foreach ($stats as $i => $stat)
-            if ($stat['sid'] == $sec['id'] && $stat['unit'] == $unit['unit']) {
+            if ($stat['sid'] == $sec['sid'] && $stat['unit'] == $unit['unit']) {
                 $pass = (float)$stat['pass'] * 100 / (float)$unit['cnt'];
                 $fail = (float)$stat['fail'] * 100 / (float)$unit['cnt'];
                 unset($stats[$i]);
                 break;
             }
-        echo '<div class="col-auto"><div data-toggle="buttons" class="progress-btn"><div class="progress"><div class="progress-bar bg-success" role="progressbar" style="width: ' . $pass . '%"></div><div class="progress-bar bg-danger" role="progressbar" style="width: ' . $fail . '%"></div></div><label class="btn btn-sm btn-outline-warning btn-static text-dark"><script>document.write(disp("' . $unit['unit'] . '"));</script><input id="' . $unit['unit'] . '" type="checkbox" autocomplete="off"></label></div></div>';
+        echo '<div class="col-auto"><div data-toggle="buttons" class="progress-btn"><div class="progress"><div class="progress-bar bg-success" role="progressbar" style="width: ' . $pass . '%"></div><div class="progress-bar bg-danger" role="progressbar" style="width: ' . $fail . '%"></div></div><label class="btn btn-sm btn-outline-warning btn-static text-dark"><script>document.write(disp("' . $unit['unit'] . '"));</script><input unit="' . $unit['unit'] . '" type="checkbox" autocomplete="off"></label></div></div>';
     }
     echo '</div></li>';
     $secs[$index]['units'] = $units;
@@ -66,7 +66,7 @@ foreach ($secs as $index => $sec) {
 var sections = <?php
 $sections = [];
 foreach ($secs as $sec)
-    $sections[$sec['id']] = $sec;
+    $sections[$sec['sid']] = $sec;
 echo json_encode($sections);
 ?>;
 </script>

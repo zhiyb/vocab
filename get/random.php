@@ -24,7 +24,7 @@ function getWords($sid, $unit)
 $words = array();
 foreach ($secs as $sec) {
     foreach ($sec['units'] as $index => $unit) {
-        $uwords = getWords($sec['id'], $unit['unit']);
+        $uwords = getWords($sec['sid'], $unit['unit']);
         if ($uwords != null)
             $words = array_merge($words, $uwords);
     }

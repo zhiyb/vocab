@@ -18,7 +18,7 @@ if (createDatabase($dbprefix . "vocab") !== TRUE)
 
 $db->select_db($dbprefix . "vocab");
 if ($db->query("CREATE TABLE IF NOT EXISTS info (
-    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    sid INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     name TINYTEXT NOT NULL,
     style TEXT, weight TEXT)
     CHARACTER SET = utf8 COLLATE utf8_bin") !== TRUE)
@@ -31,7 +31,7 @@ if ($db->query("CREATE TABLE IF NOT EXISTS `words` (
     `word` TEXT NOT NULL,
     `info` TEXT,
     PRIMARY KEY (`id`),
-    FOREIGN KEY (`sid`) REFERENCES `info`(`id`) ON DELETE CASCADE ON UPDATE CASCADE
+    FOREIGN KEY (`sid`) REFERENCES `info`(`sid`) ON DELETE CASCADE ON UPDATE CASCADE
     ) CHARACTER SET = utf8 COLLATE utf8_bin") !== TRUE)
     die("Error creating table vocab->info: " . $db->error . "\n");
 

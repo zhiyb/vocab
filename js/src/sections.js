@@ -21,15 +21,15 @@ function refreshSections(refresh)
     var html = '';
     for (i in res) {
       var obj = res[i];
-      var id = obj['id'];
+      var sid = obj['sid'];
       var name = obj['name'];
       var active = '';
       var button = '';
-      if (!refresh && id == section) {
+      if (!refresh && sid == section) {
         active = 'active';
         button = sectionEditButton();
       }
-      html = html.concat('<a class="nav-item ' + active + ' nav-link align-self-end" href="#" sid="' + id + '" data-toggle="tab">' + disp(name) + button + '</a>');
+      html = html.concat('<a class="nav-item ' + active + ' nav-link align-self-end" href="#" sid="' + sid + '" data-toggle="tab">' + disp(name) + button + '</a>');
     }
     html = html.concat('<a class="nav-item nav-link align-self-end" href="#" sid="add"><span class="fa fa-plus"></span></a>');
     html = html.concat('<a class="nav-item nav-link align-self-end" href="cards.php" target="_blank" sid="check"><span class="fa fa-check-square-o"></span></a>');
@@ -44,7 +44,7 @@ function refreshSections(refresh)
 
 function refreshEditSection()
 {
-  $('#section_id').text('Edit section #' + secobj.id);
+  $('#section_id').text('Edit section #' + secobj.sid);
   $('#section_name textarea').val(secobj.name);
   autosize.update($('#section_name textarea'));
   $('#section_style').html(jsonedit(secobj.style));
@@ -61,10 +61,10 @@ $('#sectabs').on('click', 'a', function() {
     ;
   else if (secid != section) {
     var a = $(this);
-    $.getJSON("get/section.php?id=" + secid, function(obj) {
+    $.getJSON("get/section.php?sid=" + secid, function(obj) {
       refreshUnits(secid);
       secobj = obj;
-      section = obj.id;
+      section = obj.sid;
       style = JSON.parse(obj.style);
       if (style == null)
         style = {};
@@ -94,7 +94,7 @@ $('#section_name .nameeditor .btn-warning').click(function() {$('#edit_section')
 
 // Section editor 'submit'
 $('#section_name .nameeditor .btn-success').click(function() {
-  var obj = {id: section};
+  var obj = {sid: section};
   obj['name'] = $('#section_name textarea').val();
   obj['style'] = JSON.stringify(jsonobj($('#section_style')));
   obj['weight'] = JSON.stringify(jsonobj($('#section_weight')));
@@ -109,5 +109,5 @@ $('#section_name .nameeditor .btn-success').click(function() {
 // Section editor 'remove'
 $('#section_name .nameeditor .btn-danger').click(function() {
   if (confirm('DELETE section #' + section + '?'))
-    $.post('set/delete_section.php', 'id=' + section, function() {refreshSections(true);});
+    $.post('set/delete_section.php', 'sid=' + section, function() {refreshSections(true);});
 });

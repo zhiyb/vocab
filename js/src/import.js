@@ -63,7 +63,7 @@ function importSubmit() {
     return;
   }
   var obj = {};
-  obj.id = section;
+  obj.sid = section;
   obj.unit = $('#unit_import .texteditor input').val();
   obj.payload = import_words;
   $.post('set/import_unit.php', JSON.stringify(obj), function(ret) {

@@ -13,10 +13,10 @@ if ($db->connect_error)
 $db->query('SET CHARACTER SET utf8');
 
 function getSID($name) {
-    $stmt = $GLOBALS['db']->prepare('SELECT `id` FROM `info` WHERE `name` = ?');
+    $stmt = $GLOBALS['db']->prepare('SELECT `sid` FROM `info` WHERE `name` = ?');
     $stmt->bind_param('s', $name);
     $stmt->execute();
-    return $stmt->get_result()->fetch_assoc()['id'];
+    return $stmt->get_result()->fetch_assoc()['sid'];
 }
 
 // Check for existance

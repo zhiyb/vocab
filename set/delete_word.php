@@ -2,7 +2,7 @@
 if ($_SERVER["REQUEST_METHOD"] !== "POST")
     die();
 
-$id = $_POST["wid"];
+$id = $_POST["id"];
 if ($id == null)
     die();
 

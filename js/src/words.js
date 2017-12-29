@@ -5,7 +5,7 @@ function refreshWords(unit)
     wl.children('ul').html('');
     return;
   }
-  $.getJSON('get/word_list.php?id=' + section + '&unit=' + unit, function(array) {
+  $.getJSON('get/word_list.php?sid=' + section + '&unit=' + unit, function(array) {
     var html = '';
     for (i in array)
       html = html.concat(wordElement(array[i]));
@@ -62,9 +62,9 @@ $('.word_list').on('click', '.btn-warning', function() {
 // Word editor 'submit'
 $('.word_list').on('click', '.nameeditor .btn-success', function() {
   var item = $(this).closest('li');
-  var obj = {id: section, wid: item.attr('wid'), unit: item.find('.texteditor input').val(),
+  var obj = {sid: section, wid: item.attr('wid'), unit: item.find('.texteditor input').val(),
     word: item.find('.nameeditor textarea').val(), info: JSON.stringify(jsonobj(item.find('tbody.info')))};
-  if (obj.id == '' || obj.word == '')
+  if (obj.sid == '' || obj.word == '')
     return;
   $.post('set/word.php', JSON.stringify(obj), function(ret) {
     try {
@@ -88,7 +88,7 @@ $('.word_list').on('click', '.nameeditor .btn-danger', function() {
   var item = $(this).closest('li');
   var wid = item.attr('wid');
   if (confirm('DELETE word #' + wid + '?'))
-    $.post('set/delete_word.php', 'id=' + section + '&wid=' + wid, function() {
+    $.post('set/delete_word.php', 'id=' + wid, function() {
       refreshWord(item);
       refreshUnits(section);
     });
@@ -101,8 +101,8 @@ $('#word_body .nameeditor .btn-warning').click(function() {$('#word_body').hide(
 
 // New word editor 'submit'
 $('#word_body .nameeditor .btn-success').click(function() {
-  var obj = {id: section, wid: null, unit: $('#word_body .texteditor input').val(), word: $('#word_body .nameeditor textarea').val(), info: JSON.stringify(jsonobj($('#word_info')))};
-  if (obj.id == '' || obj.word == '')
+  var obj = {sid: section, wid: null, unit: $('#word_body .texteditor input').val(), word: $('#word_body .nameeditor textarea').val(), info: JSON.stringify(jsonobj($('#word_info')))};
+  if (obj.sid == '' || obj.word == '')
     return;
   $.post('set/word.php', JSON.stringify(obj), function(ret) {
     try {

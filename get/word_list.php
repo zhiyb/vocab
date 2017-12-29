@@ -1,5 +1,5 @@
 <?php
-$sid = $_GET['id'];
+$sid = $_GET['sid'];
 $unit = $_GET['unit'];
 if ($sid == null || $unit == null)
     die();

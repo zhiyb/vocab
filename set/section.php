@@ -6,11 +6,11 @@ $json = json_decode(file_get_contents("php://input"), true);
 if ($json == null)
     die();
 
-$id = $json['id'];
+$sid = $json['sid'];
 $name = $json['name'];
 $style = $json['style'];
 $weight = $json['weight'];
-if ($id == null || $name == null)
+if ($sid == null || $name == null)
     die();
 
 require '../dbconf.php';
@@ -19,8 +19,8 @@ if ($db->connect_error)
     die("Connection failed: " . $db->connect_error . "\n");
 $db->query('SET CHARACTER SET utf8');
 
-$stmt = $db->prepare('UPDATE info SET name = ?, style = ?, weight = ? WHERE id = ?');
-$stmt->bind_param('sssi', $name, $style, $weight, $id);
+$stmt = $db->prepare('UPDATE `info` SET `name` = ?, `style` = ?, `weight` = ? WHERE `sid` = ?');
+$stmt->bind_param('sssi', $name, $style, $weight, $sid);
 if ($stmt->execute() === true)
     echo "OK";
 ?>

@@ -1,6 +1,6 @@
 <?php
-$id = $_GET["id"];
-if ($id == NULL)
+$sid = $_GET["sid"];
+if ($sid == NULL)
     die();
 
 require '../dbconf.php';
@@ -9,9 +9,10 @@ if ($db->connect_error)
     die("Connection failed: " . $db->connect_error . "\n");
 $db->query('SET CHARACTER SET utf8');
 
-$stmt = $db->prepare('SELECT * FROM info WHERE id = ?');
-$stmt->bind_param('i', $id);
-$stmt->execute();
+$stmt = $db->prepare('SELECT * FROM info WHERE sid = ?');
+$stmt->bind_param('i', $sid);
+if ($stmt->execute() !== true)
+    die($stmt->error);
 $res = $stmt->get_result()->fetch_assoc();
 echo json_encode($res);
 ?>
