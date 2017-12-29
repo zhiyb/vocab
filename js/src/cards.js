@@ -105,6 +105,10 @@ function show(h)
   hide = h;
 }
 
+function refreshSections(refresh)
+{
+}
+
 function refreshUnits(sid)
 {
   refreshWord($('.word_list li[wid]:first'));

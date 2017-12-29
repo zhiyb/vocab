@@ -121,5 +121,6 @@ echo json_encode($sections);
 <script src="js/copy.min.js"></script>
 <script src="js/cards.min.js"></script>
 <script src="js/words.min.js"></script>
+<script src="js/actions.min.js"></script>
 </body>
 </html>
