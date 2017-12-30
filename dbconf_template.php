@@ -2,5 +2,5 @@
 $dbhost = 'localhost';
 $dbuser = 'root';
 $dbpw = 'password';
-$dbname = 'vocab'
+$dbname = 'vocab';
 ?>

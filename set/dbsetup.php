@@ -13,16 +13,16 @@ function createDatabase($dbname) {
     return $stat;
 }
 
-if (createDatabase($dbprefix . "vocab") !== TRUE)
+if (createDatabase($dbname) !== TRUE)
     die();
 
-$db->select_db($dbprefix . "vocab");
+$db->select_db($dbname);
 if ($db->query("CREATE TABLE IF NOT EXISTS info (
     sid INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     name TINYTEXT NOT NULL,
     style TEXT, weight TEXT)
     CHARACTER SET = utf8 COLLATE utf8_bin") !== TRUE)
-    die("Error creating table vocab->info: " . $db->error . "\n");
+    die("Error creating table " . $dbname . "->info: " . $db->error . "\n");
 
 if ($db->query("CREATE TABLE IF NOT EXISTS `words` (
     `id` INT UNSIGNED NOT NULL AUTO_INCREMENT UNIQUE,
@@ -33,7 +33,7 @@ if ($db->query("CREATE TABLE IF NOT EXISTS `words` (
     PRIMARY KEY (`id`),
     FOREIGN KEY (`sid`) REFERENCES `info`(`sid`) ON DELETE CASCADE ON UPDATE CASCADE
     ) CHARACTER SET = utf8 COLLATE utf8_bin") !== TRUE)
-    die("Error creating table vocab->info: " . $db->error . "\n");
+    die("Error creating table " . $dbname . "->info: " . $db->error . "\n");
 
 if ($db->query("CREATE TABLE IF NOT EXISTS `user` (
     `id` INT UNSIGNED NOT NULL,
@@ -44,5 +44,5 @@ if ($db->query("CREATE TABLE IF NOT EXISTS `user` (
     PRIMARY KEY (`id`),
     FOREIGN KEY (`id`) REFERENCES `words`(`id`) ON DELETE CASCADE ON UPDATE CASCADE
     ) CHARACTER SET = utf8 COLLATE utf8_bin") !== TRUE)
-    die("Error creating table vocab->user: " . $db->error . "\n");
+    die("Error creating table " . $dbname . "->user: " . $db->error . "\n");
 ?>

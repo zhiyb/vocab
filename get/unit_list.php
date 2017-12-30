@@ -4,7 +4,7 @@ if ($sid == null)
     die();
 
 require '../dbconf.php';
-$db = new mysqli($dbhost, $dbuser, $dbpw, $dbprefix . "vocab");
+$db = new mysqli($dbhost, $dbuser, $dbpw, $dbname);
 if ($db->connect_error)
     die("Connection failed: " . $db->connect_error . "\n");
 $db->query('SET CHARACTER SET utf8');
