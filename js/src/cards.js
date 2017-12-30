@@ -114,8 +114,8 @@ function refreshUnits(sid)
   refreshWord($('.word_list li[wid]:first'));
 }
 
-// Start button
-$('button#submit').click(function() {
+function getSelections()
+{
   var secs = [];
   $('li').each(function() {
     var sec = {sid: $(this).attr('sid'), units: []};
@@ -127,6 +127,12 @@ $('button#submit').click(function() {
     if (sec.units.length)
       secs.push(sec);
   });
+  return secs;
+}
+
+// Start button
+$('button#submit').click(function() {
+  var secs = getSelections();
   if (!secs.length)
     alert('Please select units');
   else
@@ -137,6 +143,17 @@ $('button#submit').click(function() {
       } catch (e) {
         alert(e);
       }
+    });
+});
+
+// Clean button
+$('button#clean').click(function() {
+  var secs = getSelections();
+  if (!secs.length)
+    alert('Please select units');
+  else
+    $.post('set/stats_clean.php', JSON.stringify(secs), function(ret) {
+      location.reload();
     });
 });
 

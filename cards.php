@@ -31,7 +31,15 @@ $db->query('SET CHARACTER SET utf8');
 
 <div id="sections">
 <ul class="list-group">
-<li class="list-group-item list-group-item-primary">Section list</li>
+<li class="list-group-item list-group-item-primary">
+<div class="row justify-content-between">
+<div class="col-auto">Section list</div>
+<div class="col-auto">
+<button type="button" id="clean" class="btn btn-sm btn-danger"><span class="fa fa-eraser" /></button>
+<a class="btn btn-sm btn-secondary" href="./" target="_blank"><span class="fa fa-list-ul" /></a></button>
+</div>
+</div>
+</li>
 <?php
 // User stats
 $stmt = $db->prepare('SELECT `sid`, `unit`,

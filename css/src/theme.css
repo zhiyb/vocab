@@ -36,6 +36,10 @@ body {
   margin: 0px 0px 16px 16px;
 }
 
+#sections .list-group-item-primary .btn {
+  margin-right: 10px;
+}
+
 .btn-static:hover {
   background: none;
 }
