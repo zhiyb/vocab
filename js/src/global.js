@@ -14,17 +14,15 @@ function textEditor(name, value)
 
 // HTML word display
 function disp(s, hide) {
-  hide = hide ? hideStyle : '';
+  hide = hide ? ' style="' + hideStyle + '"' : '';
   return s.replace(/\\n/g, '\n').replace(/<[^>]*>/g, function(s) {
-    var href = s.substring(1, s.length - 1);
+    var href = s.slice(1, -1);
     return '<a href="' + href + '">' + href + '</a>'
-  }).replace(/\n/g, '|\n').replace(/[^|\n]*(\||$)/g, function(s) {
-    if (s.search('`') == -1)
-      return s;
-    return '<ruby>' + s.replace(/`[^`]*?(`|$)/g, function(s) {
-      return '<rp>(</rp><rt style="' + hide + '">' + s + '</rt><rp>)</rp>';
-    }) + '</ruby>';
-  }).replace(/[|`]/g, '').replace(/\n/g, '<br>');
+  }).replace(/`[^|`\n]+`/g, function(s) {
+    return s.slice(0, -1) + '|';
+  }).replace(/[^|`\n]+`[^|`\n]+/g, function(s) {
+    return '<ruby>' + s.replace('`', '<rp>(</rp><rt' + hide + '>') + '</rt><rp>)</rp></ruby>';
+  }).replace(/\|/g, '').replace(/\n/g, '<br>');
 }
 
 function dispStyle(type, hide) {
