@@ -40,33 +40,11 @@ function refreshEditWord(unit)
   autosize($('#edit_word textarea'));
 }
 
-// Word list 'edit' or word editor 'cancel'
-$('.word_list').on('click', '.btn-warning', function() {
-  var item = $(this).closest('li');
-  if (item.hasClass('list-group-item-warning')) {
-    // Discard changes
-    refreshWord(item);
-  } else {
-    // Display editing panel
-    var wid = item.attr('wid');
-    $.getJSON('get/word.php?sid=' + section + '&id=' + wid, function(word) {
-      if (word == null)
-        return;
-      item.addClass('list-group-item-warning');
-      item.html(textEditor('Unit', word.unit == '(default)' ? '' : word.unit) + '<p>' + nameEditor('Word', word.word) + '<p><table class="table"><tbody class="jsonedit info">' + jsonedit(word.info) + '</tbody></table>');
-      autosize(item.find('textarea'));
-    });
-  }
-});
-
-// Word editor 'submit'
-$('.word_list').on('click', '.nameeditor .btn-success', function() {
-  var item = $(this).closest('li');
-  var obj = {sid: section, wid: item.attr('wid'), unit: item.find('.texteditor input').val(),
-    word: item.find('.nameeditor textarea').val(), info: JSON.stringify(jsonobj(item.find('tbody.info')))};
-  if (obj.sid == '' || obj.word == '')
+function editWord(word, item)
+{
+  if (!word.id || !word.sid || word.word == '')
     return;
-  $.post('set/word.php', JSON.stringify(obj), function(ret) {
+  $.post('set/word.php', JSON.stringify(word), function(ret) {
     try {
       var obj = JSON.parse(ret);
     } catch (e) {
@@ -81,6 +59,33 @@ $('.word_list').on('click', '.nameeditor .btn-success', function() {
     } else
       refreshWord(item);
   });
+}
+
+// Word list 'edit' or word editor 'cancel'
+$('.word_list').on('click', '.btn-warning', function() {
+  var item = $(this).closest('li');
+  if (item.hasClass('list-group-item-warning')) {
+    // Discard changes
+    refreshWord(item);
+  } else {
+    // Display editing panel
+    var wid = item.attr('wid');
+    $.getJSON('get/word.php?id=' + wid, function(word) {
+      if (word == null)
+        return;
+      item.addClass('list-group-item-warning');
+      item.html(textEditor('Unit', word.unit == '(default)' ? '' : word.unit) + '<p>' + nameEditor('Word', word.word) + '<p><table class="table"><tbody class="jsonedit info">' + jsonedit(word.info) + '</tbody></table>');
+      autosize(item.find('textarea'));
+    });
+  }
+});
+
+// Word editor 'submit'
+$('.word_list').on('click', '.nameeditor .btn-success', function() {
+  var item = $(this).closest('li');
+  var obj = {sid: section, id: item.attr('wid'), unit: item.find('.texteditor input').val(),
+    word: item.find('.nameeditor textarea').val(), info: JSON.stringify(jsonobj(item.find('tbody.info')))};
+  editWord(obj, item);
 });
 
 // Word editor 'remove'
@@ -92,6 +97,25 @@ $('.word_list').on('click', '.nameeditor .btn-danger', function() {
       refreshWord(item);
       refreshUnits(section);
     });
+});
+
+// Word list 'magic'
+$('.word_list').on('click', '.word_magic', function() {
+  var item = $(this).closest('li');
+  var id = item.attr('wid');
+  if (!id)
+    return;
+  $.getJSON('get/word.php?id=' + id, function(word) {
+      if (word == null)
+        return;
+      var info = JSON.parse(word.info);
+      if (!word.word || !info.kana)
+        return;
+      word.word = rubyConvert(word.word, info.kana);
+      delete info.kana;
+      word.info = JSON.stringify(info);
+      editWord(word, item);
+  });
 });
 
 // New word editor header 'click'

@@ -7,7 +7,7 @@ if ($json == null)
     die();
 
 $sid = $json['sid'];
-$id = $json['wid'];
+$id = $json['id'];
 $unit = $json['unit'];
 $word = $json['word'];
 $info = $json['info'];

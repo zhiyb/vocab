@@ -2,14 +2,23 @@ var ani = 120;  // Animation speed
 var style = {};
 var hideStyle = 'color: black; background-color: black';
 
-function nameEditor(name, value)
-{
-  return '<div class="input-group nameeditor"><span class="input-group-btn"><button class="btn btn-danger"><span class="fa fa-trash"></span></button><button class="btn btn-warning"><span class="fa fa-times"></span></button><button class="btn btn-success"><span class="fa fa-check"></span></button></span><textarea class="form-control" type="text" rows=1 placeholder="' + name + '">' + value + '</textarea></div>';
-}
-
-function textEditor(name, value)
-{
-  return '<div class="input-group texteditor"><span class="input-group-addon">' + name + '</span><input class="form-control" type="text" value="' + value + '"></div>';
+// Text functions
+function rubyConvert(a, b) {
+  // Find common start
+  var si, sj = 0;
+  for (si = 0; si < a.length && sj < b.length; si++, sj++)
+    if (a[si] != b[sj])
+      break;
+  if (si == a.length)
+    return a + b.slice(si);
+  // Find common end
+  var ei, ej = b.length;
+  for (ei = a.length; ei > 0 && ej > 0; ei--, ej--)
+    if (a[ei - 1] != b[ej - 1])
+      break;
+  // Convert to ruby
+  var s = a.slice(0, si) + '|' + a.slice(si, ei) + '`' + b.slice(sj, ej) + '|' + a.slice(ei);
+  return s.replace(/^\|/, '').replace(/\|$/, '');
 }
 
 // HTML word display
@@ -49,7 +58,18 @@ function wordDisp(obj) {
 }
 
 function wordElement(word, hide) {
-  return '<li class="list-group-item" wid="' + word.id + '"><h4 class="list-group-item-heading"><span ' + dispStyle('word', hide) + '>' + disp(word.word, hide) + '</span><div class="btn-group"><button class="btn btn-sm btn-warning"><span class="fa fa-pencil"></span></button><button class="btn btn-sm btn-info word_copy"><span class="fa fa-copy"></span></button></div></h4><p class="list-group-item-text"><table><tbody>' + wordDisp(word) + '</tbody></table></li>';
+  return '<li class="list-group-item" wid="' + word.id + '"><h4 class="list-group-item-heading"><span ' + dispStyle('word', hide) + '>' + disp(word.word, hide) + '</span><div class="btn-group"><button class="btn btn-sm btn-warning"><span class="fa fa-pencil"></span></button><button class="btn btn-sm btn-secondary word_magic"><span class="fa fa-magic"></span></button><button class="btn btn-sm btn-info word_copy"><span class="fa fa-copy"></span></button></div></h4><p class="list-group-item-text"><table><tbody>' + wordDisp(word) + '</tbody></table></li>';
+}
+
+// Common editors
+function nameEditor(name, value)
+{
+  return '<div class="input-group nameeditor"><span class="input-group-btn"><button class="btn btn-danger"><span class="fa fa-trash"></span></button><button class="btn btn-warning"><span class="fa fa-times"></span></button><button class="btn btn-success"><span class="fa fa-check"></span></button></span><textarea class="form-control" type="text" rows=1 placeholder="' + name + '">' + value + '</textarea></div>';
+}
+
+function textEditor(name, value)
+{
+  return '<div class="input-group texteditor"><span class="input-group-addon">' + name + '</span><input class="form-control" type="text" value="' + value + '"></div>';
 }
 
 // JSON editor functions
