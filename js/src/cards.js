@@ -149,12 +149,22 @@ $('button#submit').click(function() {
 // Clean button
 $('button#clean').click(function() {
   var secs = getSelections();
-  if (!secs.length)
+  if (!secs.length) {
     alert('Please select units');
-  else
-    $.post('set/stats_clean.php', JSON.stringify(secs), function(ret) {
-      location.reload();
-    });
+  } else {
+    var i, unit, s = 'Please confirm cleaning stats for:\n';
+    for (i in secs) {
+      var sec = secs[i];
+      s = s.concat('#' + sec.sid + ': ');
+      for (j in sec.units)
+        s = s.concat((j != 0 ? ', ' : '') + sec.units[j].unit);
+      s = s.concat('\n');
+    }
+    if (confirm(s) == true)
+      $.post('set/stats_clean.php', JSON.stringify(secs), function(ret) {
+        location.reload();
+      });
+  }
 });
 
 // Control buttons
