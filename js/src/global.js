@@ -4,21 +4,14 @@ var hideStyle = 'color: black; background-color: black';
 
 // Text functions
 function rubyConvert(a, b) {
-  // Find common start
-  var si, sj = 0;
-  for (si = 0; si < a.length && sj < b.length; si++, sj++)
-    if (a[si] != b[sj])
-      break;
-  if (si == a.length)
-    return a + b.slice(si);
-  // Find common end
-  var ei, ej = b.length;
-  for (ei = a.length; ei > 0 && ej > 0; ei--, ej--)
-    if (a[ei - 1] != b[ej - 1])
-      break;
-  // Convert to ruby
-  var s = a.slice(0, si) + '|' + a.slice(si, ei) + '`' + b.slice(sj, ej) + '|' + a.slice(ei);
-  return s.replace(/^\|/, '').replace(/\|$/, '');
+  var s = 'x' + a + 'x|x' + b + 'x';
+  return s.replace(/(.+)(.+?)(?=(.+).*\|.*\1(((?!\2).)+?)\3)/g,
+      function(s0, s1, s2, s3, s4, s5) {
+        if (s2.includes(s4))
+          return s1 + s2;
+        else
+          return s1 + '|' + s2 + '`' + s4 + '|';
+      }).replace(/\|[^|]*$/, '').replace(/^\|*x\|*/, '').replace(/\|*x\|*$/, '');
 }
 
 // HTML word display
