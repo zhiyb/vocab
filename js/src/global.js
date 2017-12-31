@@ -58,7 +58,7 @@ function wordDisp(obj) {
 }
 
 function wordElement(word, hide) {
-  return '<li class="list-group-item" wid="' + word.id + '"><h4 class="list-group-item-heading"><span ' + dispStyle('word', hide) + '>' + disp(word.word, hide) + '</span><div class="btn-group"><button class="btn btn-sm btn-warning"><span class="fa fa-pencil"></span></button><button class="btn btn-sm btn-secondary word_magic"><span class="fa fa-magic"></span></button><button class="btn btn-sm btn-info word_copy"><span class="fa fa-copy"></span></button></div></h4><p class="list-group-item-text"><table><tbody>' + wordDisp(word) + '</tbody></table></li>';
+  return '<li class="list-group-item" wid="' + word.id + '"><h4 class="list-group-item-heading"><span ' + dispStyle('word', hide) + '>' + disp(word.word, hide) + '</span><div class="btn-group"><button class="btn btn-sm btn-warning"><span class="fa fa-pencil"></span></button><button class="btn btn-sm btn-info word_copy"><span class="fa fa-copy"></span></button></div></h4><p class="list-group-item-text"><table><tbody>' + wordDisp(word) + '</tbody></table></li>';
 }
 
 // Common editors
