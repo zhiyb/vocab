@@ -5,13 +5,20 @@ var hideStyle = 'color: black; background-color: black';
 // Text functions
 function rubyConvert(a, b) {
   var s = 'x' + a + 'x|x' + b + 'x';
-  return s.replace(/(.+)(.+?)(?=(.+).*\|.*\1(((?!\2).)+?)\3)/g,
+  s = s.replace(/(.+)(.+?)(?=(.+).*\|.*\1(((?!\2).)+?)\3)/g,
       function(s0, s1, s2, s3, s4, s5) {
         if (s2.includes(s4))
           return s1 + s2;
         else
           return s1 + '|' + s2 + '`' + s4 + '|';
       }).replace(/\|[^|]*$/, '').replace(/^\|*x\|*/, '').replace(/\|*x\|*$/, '');
+  if (s.replace(/`[^`|]*(?:[`|]|$)/g, '').replace(/[`|]/g, '') == a) {
+    if (s.replace(/(?:^|[`|]+)[^`|]*`/g, '').replace(/[`|]/g, '') == b)
+      return s;
+    alert('Ruby mismatch');
+  }
+  alert('Base mismatch');
+  return a + '`' + b;
 }
 
 // HTML word display
