@@ -3,6 +3,7 @@ var hide = true;
 var words = [];
 var section = 0;
 var unit = "";
+var text = "", annot = "";
 
 function start(ws)
 {
@@ -74,6 +75,7 @@ function updateButtons(stats)
 
 function submit(type)
 {
+  console.log('Submit: ' + type);
   if (index >= words.length) {
     back();
     return;
@@ -103,6 +105,9 @@ function show(h)
   var word = words[index];
   $('div#card > ul').html(wordElement(word, h));
   hide = h;
+  var html = disp(word.word);
+  text = html2text(html).trim();
+  annot = html2annot(html).trim();
 }
 
 function refreshSections(refresh)
@@ -164,6 +169,39 @@ $('button#clean').click(function() {
       $.post('set/stats_clean.php', JSON.stringify(secs), function(ret) {
         location.reload();
       });
+  }
+});
+
+// Text input field
+$('#test').on('input', function(e) {
+  var s = e.target.value.trim();
+  if (s === '?' || s === '？') {
+    show(false);
+  } else if (s === text || s === annot) {
+    if (hide) {
+      $(this).removeClass('text-warning text-danger');
+      $(this).addClass('text-success');
+    } else {
+      $(this).removeClass('text-success text-danger');
+      $(this).addClass('text-warning');
+    }
+  } else {
+    $(this).removeClass('text-success text-warning');
+    $(this).addClass('text-danger');
+  }
+});
+
+$('#test').on('keyup', function(e) {
+  var s = e.target.value.trim();
+  if (e.which == 13) {
+    if (s === text || s === annot) {
+      if (hide)
+        submit('yes');
+      else
+        submit('skip');
+    } else if (e.shiftKey) {
+      submit('no');
+    }
   }
 });
 

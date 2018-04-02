@@ -96,7 +96,8 @@ echo json_encode($sections);
 <div class="col-sm"><button class="btn btn-warning btn-lg btn-block">Skip</button></div>
 <div class="col-sm"><button class="btn btn-danger btn-lg btn-block">No</button></div>
 <div class="col-sm"><button class="btn btn-secondary btn-lg btn-block">Back</button></div>
-</div>
+</div><p>
+<div><textarea class="form-control" type="text" rows=1 id="test"></textarea></div>
 </div>
 <div id="words" style="display:none"><ul class="list-group"></ul></div>
 
