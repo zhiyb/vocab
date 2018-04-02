@@ -1,5 +1,4 @@
 <?php
-require 'get/algorithm.php';
 require 'dbconf.php';
 
 // Connect database
@@ -41,18 +40,6 @@ $db->query('SET CHARACTER SET utf8');
 </div>
 </li>
 <?php
-// User stats
-$stmt = $db->prepare('SELECT `sid`, `unit`,
-    SUM(`sum` > 0) AS `pass`, SUM(`sum` < 0) AS `fail` FROM (
-        SELECT `sid`, `unit`, ' . $stat . ' AS `sum` FROM (
-            SELECT `user`.`id`, `sid`, `unit`, `yes`, `skip`, `no`, `time` FROM `words`
-            RIGHT JOIN `user` ON `words`.`id` = `user`.`id`
-        ) AS `res`
-    ) AS `res` GROUP BY `sid`, `unit` ORDER BY `sid`, LOWER(`unit`)');
-if ($stmt->execute() !== true)
-    die($stmt->error);
-$stats = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
-
 // Enumerate sections and units
 $secs = $GLOBALS['db']->query("SELECT * FROM `info` ORDER BY LOWER(`name`)")->fetch_all(MYSQLI_ASSOC);
 foreach ($secs as $index => $sec) {
@@ -60,16 +47,7 @@ foreach ($secs as $index => $sec) {
     echo '<li class="list-group-item" sid="' . $sec['sid'] . '"><script>document.write(disp("' . $sec['name'] . '"));</script>';
     echo '<div class="row justify-content-start align-items-end">';
     foreach ($units as $unit) {
-        $pass = 0.0;
-        $fail = 0.0;
-        foreach ($stats as $i => $stat)
-            if ($stat['sid'] == $sec['sid'] && $stat['unit'] == $unit['unit']) {
-                $pass = (float)$stat['pass'] * 100 / (float)$unit['cnt'];
-                $fail = (float)$stat['fail'] * 100 / (float)$unit['cnt'];
-                unset($stats[$i]);
-                break;
-            }
-        echo '<div class="col-auto"><div data-toggle="buttons" class="progress-btn"><div class="progress"><div class="progress-bar bg-success" role="progressbar" style="width: ' . $pass . '%"></div><div class="progress-bar bg-danger" role="progressbar" style="width: ' . $fail . '%"></div></div><label class="btn btn-sm btn-outline-warning btn-static text-dark"><script>document.write(disp("' . $unit['unit'] . '"));</script><input unit="' . $unit['unit'] . '" type="checkbox" autocomplete="off"></label></div></div>';
+        echo '<div class="col-auto"><div data-toggle="buttons" class="progress-btn" unit="' . $unit['unit'] . '"><div class="progress"><div class="progress-bar bg-success" role="progressbar"></div><div class="progress-bar bg-warning" role="progressbar"></div><div class="progress-bar bg-danger" role="progressbar"></div></div><label class="btn btn-sm btn-outline-primary btn-static text-dark"><script>document.write(disp("' . $unit['unit'] . '"));</script><input type="checkbox" autocomplete="off"></label></div></div>';
     }
     echo '</div></li>';
     $secs[$index]['units'] = $units;
@@ -88,7 +66,12 @@ echo json_encode($sections);
 </div>
 
 <div id="card" style="display:none">
-<div class="progress" style="height: 24px;"><div class="progress-bar progress-bar-striped progress-bar-animated bg-info text-dark" role="progressbar" style="width: 100%">1536/2048</div></div><p>
+<div class="progress bg-success" style="height:24px;position:relative">
+<div class="progress-bar progress-bar-striped progress-bar-animated bg-info text-dark" role="progressbar" style="width:10%;height:100%;position:absolute">768/2048</div>
+<div class="progress-bar bg-secondary" role="progressbar" style="width:25%"></div>
+<div class="progress-bar bg-danger" role="progressbar" style="width:25%"></div>
+<div class="progress-bar bg-warning" role="progressbar" style="width:25%"></div>
+</div><p>
 <ul class="list-group word_list"></ul><p>
 <div><textarea class="form-control" type="text" rows="1" id="test"></textarea></div><p>
 <div class="row" id="buttons">
