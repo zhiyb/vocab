@@ -61,6 +61,8 @@ function update()
   }
 
   show(true);
+  $('#test').val('');
+  $('#test').trigger('change');
 }
 
 function updateButtons(stats)
