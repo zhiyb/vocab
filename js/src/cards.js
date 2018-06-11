@@ -68,6 +68,8 @@ function update()
   unit = word.unit;
   try {
     style = JSON.parse(sections[word.sid].style);
+    if (style == null)
+      style = {};
   } catch (e) {
     style = {};
   }
