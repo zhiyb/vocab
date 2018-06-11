@@ -29,16 +29,24 @@ $db->query('SET CHARACTER SET utf8');
 <div class="container theme-showcase" role="main">
 
 <div id="sections">
+
+<div class="row align-items-center justify-content-end">
+<div class="col-auto">
+<h5 style="display:inline;margin-right:12px"><span id="uid" class="badge badge-light">User ID</span></h5>
+</div>
+</div><p>
+
 <ul class="list-group">
 <li class="list-group-item list-group-item-primary">
-<div class="row justify-content-between">
+<div class="row align-items-center">
 <div class="col-auto">Section list</div>
-<div class="col-auto">
+<div class="col-auto ml-auto">
 <button type="button" id="clean" class="btn btn-sm btn-danger"><span class="fa fa-eraser" /></button>
 <a class="btn btn-sm btn-secondary" href="./" target="_blank"><span class="fa fa-list-ul" /></a></button>
 </div>
 </div>
 </li>
+
 <?php
 // Enumerate sections and units
 $secs = $GLOBALS['db']->query("SELECT * FROM `info` ORDER BY LOWER(`name`)")->fetch_all(MYSQLI_ASSOC);
@@ -105,6 +113,25 @@ echo json_encode($sections);
     <div class="modal-footer">
       <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
     </div>
+  </div>
+</div>
+</div>
+
+<!-- User ID login dialog -->
+<div id="ulogin" class="modal fade" data-backdrop="static" data-keyboard="false" role="dialog">
+<div class="modal-dialog" role="document">
+  <div class="modal-content">
+    <form action="javascript:void(0)">
+      <div class="modal-header">
+        <h4 class="modal-title">Please provide a token:</h4>
+      </div>
+      <div class="modal-body">
+        <input class="form-control" type="text" placeholder="Token string"></input>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </div>
+    </form>
   </div>
 </div>
 </div>

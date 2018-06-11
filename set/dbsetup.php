@@ -31,17 +31,19 @@ if ($db->query("CREATE TABLE IF NOT EXISTS `words` (
     `word` TEXT NOT NULL,
     `info` TEXT,
     PRIMARY KEY (`id`),
+    UNIQUE (`sid`, `id`),
     FOREIGN KEY (`sid`) REFERENCES `info`(`sid`) ON DELETE CASCADE ON UPDATE CASCADE
     ) CHARACTER SET = utf8 COLLATE utf8_bin") !== TRUE)
     die("Error creating table " . $dbname . "->info: " . $db->error . "\n");
 
 if ($db->query("CREATE TABLE IF NOT EXISTS `user` (
+    `uid` BINARY(16) NOT NULL,
     `id` INT UNSIGNED NOT NULL,
     `yes` INT UNSIGNED NOT NULL DEFAULT 0,
     `skip` INT UNSIGNED NOT NULL DEFAULT 0,
     `no` INT UNSIGNED NOT NULL DEFAULT 0,
     `time` TIMESTAMP,
-    PRIMARY KEY (`id`),
+    PRIMARY KEY (`uid`, `id`),
     FOREIGN KEY (`id`) REFERENCES `words`(`id`) ON DELETE CASCADE ON UPDATE CASCADE
     ) CHARACTER SET = utf8 COLLATE utf8_bin") !== TRUE)
     die("Error creating table " . $dbname . "->user: " . $db->error . "\n");

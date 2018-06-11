@@ -1,10 +1,14 @@
 <?php
 if ($_SERVER["REQUEST_METHOD"] != "POST")
-    die();
+    die('POST only');
+
+$uid = $_GET['uid'];
+if ($uid == null)
+    die('UID required');
 
 $secs = json_decode(file_get_contents("php://input"), true);
 if ($secs == null)
-    die();
+    die('POST data not found');
 
 require 'algorithm.php';
 require '../dbconf.php';
@@ -32,10 +36,14 @@ foreach ($secs as $sec) {
 }
 
 // Enumerate words
-$words = $db->query('SELECT `words`.`id`, `sid`, `unit`, `word`, `info`, '
-    . $algo .  ' AS `weight` FROM `user` RIGHT JOIN (
+$stmt = $db->prepare('SELECT `words`.`id`, `sid`, `unit`, `word`, `info`, '
+    . $algo .  ' AS `weight` FROM (SELECT * FROM `user` WHERE `uid` = UNHEX(?)) AS `user` RIGHT JOIN (
         SELECT `id`, `words`.`sid`, `words`.`unit`, `word`, `info` FROM `words`
         RIGHT JOIN `sel` ON `words`.`sid` = `sel`.`sid` AND `words`.`unit` = `sel`.`unit`
-    ) AS `words` ON `user`.`id` = `words`.`id` ORDER BY `weight`, RAND()')->fetch_all(MYSQLI_ASSOC);
-echo json_encode($words);
+    ) AS `words` ON `user`.`id` = `words`.`id` ORDER BY `weight`, RAND()');
+if ($stmt == false)
+    die($db->error);
+$stmt->bind_param('s', $uid);
+$stmt->execute();
+echo json_encode($stmt->get_result()->fetch_all(MYSQLI_ASSOC));
 ?>

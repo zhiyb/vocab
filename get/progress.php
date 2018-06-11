@@ -1,4 +1,8 @@
 <?php
+$uid = $_GET['uid'];
+if ($uid == null)
+    die('UID required');
+
 require 'algorithm.php';
 require '../dbconf.php';
 $db = new mysqli($dbhost, $dbuser, $dbpw, $dbname);
@@ -12,9 +16,12 @@ $stmt = $db->prepare('SELECT `sid`, `unit`, CAST(SUM(1) AS UNSIGNED) AS `total`,
     SELECT `sid`, `unit`, (`yes` IS NULL) AS `new`,
         COALESCE(' .$algo . ', 0) AS `weight` FROM (
             SELECT `user`.`id`, `sid`, `unit`, `yes`, `skip`, `no`, `time` FROM `words`
-            LEFT JOIN `user` ON `words`.`id` = `user`.`id`
+            LEFT JOIN (SELECT * FROM `user` WHERE `uid` = UNHEX(?)) AS `user` ON `words`.`id` = `user`.`id`
         ) AS `res`
     ) AS `res` GROUP BY `sid`, `unit` ORDER BY `sid`, LOWER(`unit`)');
+if ($stmt == false)
+    die($db->error);
+$stmt->bind_param('s', $uid);
 if ($stmt->execute() !== true)
     die($stmt->error);
 $stats = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);

@@ -1,3 +1,4 @@
+var uid = null;
 var index = 0;
 var hide = true;
 var words = [];
@@ -55,7 +56,7 @@ function update()
   }
   var word = words[index];
   var obj = {id: word.id, sid: word.sid};
-  $.post('get/stats.php', JSON.stringify(obj), function(ret) {
+  $.post('get/stats.php?uid=' + uid, JSON.stringify(obj), function(ret) {
     try {
       updateButtons(JSON.parse(ret));
     } catch (e) {
@@ -98,7 +99,7 @@ function submit(type)
   }
   var word = words[index];
   var obj = {id: word.id, sid: word.sid, field: type};
-  $.post('set/stats_increment.php', JSON.stringify(obj), function(ret) {
+  $.post('set/stats_increment.php?uid=' + uid, JSON.stringify(obj), function(ret) {
     try {
       updateButtons(JSON.parse(ret));
     } catch (e) {
@@ -155,9 +156,9 @@ function getSelections()
 $('button#submit').click(function() {
   var secs = getSelections();
   if (!secs.length)
-    alert('Please select units');
+    alert('Please select one or some units');
   else
-    $.post('get/random.php', JSON.stringify(secs), function(ret) {
+    $.post('get/random.php?uid=' + uid, JSON.stringify(secs), function(ret) {
       try {
         var obj = JSON.parse(ret);
         start(obj);
@@ -179,7 +180,7 @@ $('button#submit').click(function() {
         pg.children('.bg-warning').css('width', 100 * (po.total - po['new'] - po.pass - po.fail) / po.total + '%');
         console.log(JSON.stringify(po));
       } catch (e) {
-        alert(e);
+        alert(e + ":\n" + ret);
       }
     });
 });
@@ -188,7 +189,7 @@ $('button#submit').click(function() {
 $('button#clean').click(function() {
   var secs = getSelections();
   if (!secs.length) {
-    alert('Please select units');
+    alert('Please select one or some units to clean statistics');
   } else {
     var i, unit, s = 'Please confirm cleaning stats for:\n';
     for (i in secs) {
@@ -199,7 +200,7 @@ $('button#clean').click(function() {
       s = s.concat('\n');
     }
     if (confirm(s) == true)
-      $.post('set/stats_clean.php', JSON.stringify(secs), function(ret) {
+      $.post('set/stats_clean.php?uid=' + uid, JSON.stringify(secs), function(ret) {
         location.reload();
       });
   }
@@ -250,7 +251,7 @@ $('#buttons .btn-secondary').click(back);
 
 // Update progress
 function updateProgress() {
-  $.getJSON('get/progress.php', function(obj) {
+  $.getJSON('get/progress.php?uid=' + uid, function(obj) {
     progress = obj;
     for (var i in obj) {
       var o = obj[i];
@@ -264,4 +265,25 @@ function updateProgress() {
   });
 }
 
-updateProgress();
+// Show login dialog
+function userLogin() {
+  $('#ulogin').modal();
+}
+
+// Login submit
+$('#ulogin .btn-primary').click(function() {
+  val = $('#ulogin input').val().trim();
+  if (!val) {
+    alert('Please provide a token string as identifier');
+    return;
+  }
+  $.post('get/hash.php', $('#ulogin input').val(), function(ret) {
+    uid = ret;
+    updateProgress();
+    $('#uid').text(uid);
+    $('#ulogin').modal('hide');
+  });
+});
+
+if (!uid)
+  userLogin();

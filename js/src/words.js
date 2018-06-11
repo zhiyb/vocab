@@ -125,7 +125,7 @@ $('#word_body .nameeditor .btn-warning').click(function() {$('#word_body').hide(
 
 // New word editor 'submit'
 $('#word_body .nameeditor .btn-success').click(function() {
-  var obj = {sid: section, wid: null, unit: $('#word_body .texteditor input').val(), word: $('#word_body .nameeditor textarea').val(), info: JSON.stringify(jsonobj($('#word_info')))};
+  var obj = {sid: section, id: null, unit: $('#word_body .texteditor input').val(), word: $('#word_body .nameeditor textarea').val(), info: JSON.stringify(jsonobj($('#word_info')))};
   if (obj.sid == '' || obj.word == '')
     return;
   $.post('set/word.php', JSON.stringify(obj), function(ret) {
