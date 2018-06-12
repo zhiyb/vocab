@@ -46,6 +46,8 @@ function back()
   $('div#sections').show(ani);
   $('div#card').hide(ani);
   $("html, body").animate({scrollTop: 0}, "slow");
+  // Update progress bars
+  updateProgress();
 }
 
 function update()
@@ -201,7 +203,8 @@ $('button#clean').click(function() {
     }
     if (confirm(s) == true)
       $.post('set/stats_clean.php?uid=' + uid, JSON.stringify(secs), function(ret) {
-        location.reload();
+        // Update progress bars
+        updateProgress();
       });
   }
 });
