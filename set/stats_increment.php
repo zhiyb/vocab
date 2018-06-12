@@ -28,10 +28,15 @@ $stmt->bind_param('si', $uid, $id);
 if ($stmt->execute() !== true)
     die($stmt->error);
 
-$stmt = $db->prepare('SELECT * FROM `user` WHERE `uid` = ? AND `id` = ?');
+$stmt = $db->prepare('SELECT * FROM `user` WHERE `uid` = UNHEX(?) AND `id` = ?');
+if ($stmt == false)
+    die($db->error);
 $stmt->bind_param('si', $uid, $id);
 if ($stmt->execute() !== true)
     die($stmt->error);
 
-echo json_encode($stmt->get_result()->fetch_assoc());
+$res = $stmt->get_result()->fetch_assoc();
+// json_encode does not support BINARY uid field
+unset($res['uid']);
+echo json_encode($res);
 ?>

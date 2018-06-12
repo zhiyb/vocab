@@ -12,7 +12,7 @@ if ($json == null)
 
 $id = $json['id'];
 if ($id == '')
-    die();
+    die('Word ID required');
 
 require '../dbconf.php';
 $db = new mysqli($dbhost, $dbuser, $dbpw, $dbname);
@@ -27,5 +27,8 @@ $stmt->bind_param('si', $uid, $id);
 if ($stmt->execute() !== true)
     die($stmt->error);
 
-echo json_encode($stmt->get_result()->fetch_assoc());
+$res = $stmt->get_result()->fetch_assoc();
+// json_encode does not support BINARY uid field
+unset($res['uid']);
+echo json_encode($res);
 ?>
