@@ -270,6 +270,9 @@ function userLogin() {
   $('#ulogin').modal();
 }
 
+// Login dialog
+$('#ulogin').on('shown.bs.modal', function() {$('#ulogin input').focus();});
+
 // Login submit
 $('#ulogin .btn-primary').click(function() {
   val = $('#ulogin input').val().trim();
