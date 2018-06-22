@@ -273,6 +273,13 @@ function userLogin() {
   $('#ulogin').modal();
 }
 
+function updateUID(u) {
+  uid = u;
+  updateProgress();
+  $('#uid').text(uid);
+  $('#ulogin').modal('hide');
+}
+
 // Login dialog
 $('#ulogin').on('shown.bs.modal', function() {$('#ulogin input').focus();});
 
@@ -283,12 +290,11 @@ $('#ulogin .btn-primary').click(function() {
     alert('Please provide a token string as identifier');
     return;
   }
-  $.post('get/hash.php', $('#ulogin input').val(), function(ret) {
-    uid = ret;
-    updateProgress();
-    $('#uid').text(uid);
-    $('#ulogin').modal('hide');
-  });
+  if (val.length == 33 && val.startsWith('#'))
+    // Hashed user ID
+    updateUID(val.slice(1));
+  else
+    $.post('get/hash.php', $('#ulogin input').val(), updateUID);
 });
 
 if (!uid)
