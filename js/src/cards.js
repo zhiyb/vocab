@@ -180,7 +180,6 @@ $('button#submit').click(function() {
         pg.children('.bg-secondary').css('width', 100 * po['new'] / po.total + '%');
         pg.children('.bg-danger').css('width', 100 * po.fail / po.total + '%');
         pg.children('.bg-warning').css('width', 100 * (po.total - po['new'] - po.pass - po.fail) / po.total + '%');
-        console.log(JSON.stringify(po));
       } catch (e) {
         alert(e + ":\n" + ret);
       }
@@ -215,19 +214,18 @@ $('#test').on('input', function(e) {
   if (e.target.value === '?' || e.target.value === '？') {
     show(false);
   } else if (s === text || s === annot) {
-    if (hide) {
+    if (hide || pass) {
       $(this).removeClass('text-warning text-danger');
       $(this).addClass('text-success');
       pass = true;
       show(false);
-    } else if (!pass) {
+    } else {
       $(this).removeClass('text-success text-danger');
       $(this).addClass('text-warning');
     }
   } else {
     $(this).removeClass('text-success text-warning');
     $(this).addClass('text-danger');
-    pass = false;
   }
 });
 
