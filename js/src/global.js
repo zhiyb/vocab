@@ -64,12 +64,12 @@ function wordElement(word, hide) {
 // Common editors
 function nameEditor(name, value)
 {
-  return '<div class="input-group nameeditor"><span class="input-group-btn"><button class="btn btn-danger"><span class="fa fa-trash"></span></button><button class="btn btn-warning"><span class="fa fa-times"></span></button><button class="btn btn-success"><span class="fa fa-check"></span></button></span><textarea class="form-control" type="text" rows=1 placeholder="' + name + '">' + value + '</textarea></div>';
+  return '<div class="input-group nameeditor"><div class="input-group-prepend"><button class="btn btn-danger"><span class="fa fa-trash"></span></button><button class="btn btn-warning"><span class="fa fa-times"></span></button><button class="btn btn-success"><span class="fa fa-check"></span></button></div><textarea class="form-control" type="text" rows=1 placeholder="' + name + '">' + value + '</textarea></div>';
 }
 
 function textEditor(name, value)
 {
-  return '<div class="input-group texteditor"><span class="input-group-addon">' + name + '</span><input class="form-control" type="text" value="' + value + '"></div>';
+  return '<div class="input-group texteditor"><div class="input-group-prepend"><span class="input-group-text">' + name + '</span></div><input class="form-control" type="text" value="' + value + '"></div>';
 }
 
 // JSON editor functions
@@ -89,7 +89,7 @@ function jsonedit(json) {
 }
 
 function jsonfield(field, value) {
-  return '<tr><th class="fit"><div class="input-group"><div class="input-group-btn"><button class="btn ' +
+  return '<tr><th><div class="input-group"><div class="input-group-prepend"><button class="btn ' +
     (field ? 'btn-danger' : 'btn-success') + '"><span class="fa ' + (field ? 'fa-times' : 'fa-plus') +
     '"></span></button></div><input class="form-control" type="text" id="field" value="' + field +
     '"></div></th><td><textarea class="form-control" type="text" rows=1 id="value">' + value + '</textarea></td></tr>';

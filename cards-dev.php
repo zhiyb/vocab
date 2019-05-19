@@ -14,12 +14,12 @@ $db->query('SET CHARACTER SET utf8');
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Section and unit selection</title>
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
 <link rel="stylesheet" href="css/src/theme.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-csv/0.8.3/jquery.csv.min.js" integrity="sha256-xKWJpqP3ZjhipWOyzFuNmG2Zkp1cW4nhUREGBztcSXs=" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/autosize.js/4.0.0/autosize.min.js" integrity="sha256-F7Bbc+3hGv34D+obsHHsSm3ZKRBudWR7e2H0fS0beok=" crossorigin="anonymous"></script>
 <script src="js/src/global.js"></script>
@@ -55,7 +55,7 @@ foreach ($secs as $index => $sec) {
     echo '<li class="list-group-item" sid="' . $sec['sid'] . '"><script>document.write(disp("' . $sec['name'] . '"));</script>';
     echo '<div class="row justify-content-start align-items-end">';
     foreach ($units as $unit) {
-        echo '<div class="col-auto"><div data-toggle="buttons" class="progress-btn" unit="' . $unit['unit'] . '"><div class="progress"><div class="progress-bar bg-success" role="progressbar"></div><div class="progress-bar bg-warning" role="progressbar"></div><div class="progress-bar bg-danger" role="progressbar"></div></div><label class="btn btn-sm btn-outline-primary btn-static text-dark"><script>document.write(disp("' . $unit['unit'] . '"));</script><input type="checkbox" autocomplete="off"></label></div></div>';
+        echo '<div class="col-auto"><div data-toggle="buttons" class="btn-group-toggle progress-btn" unit="' . $unit['unit'] . '"><div class="progress"><div class="progress-bar bg-success" role="progressbar"></div><div class="progress-bar bg-warning" role="progressbar"></div><div class="progress-bar bg-danger" role="progressbar"></div></div><label class="btn btn-sm btn-outline-primary btn-static text-dark"><script>document.write(disp("' . $unit['unit'] . '"));</script><input type="checkbox" autocomplete="off"></label></div></div>';
     }
     echo '</div></li>';
     $secs[$index]['units'] = $units;
@@ -126,7 +126,13 @@ echo json_encode($sections);
         <h4 class="modal-title">Please provide a token:</h4>
       </div>
       <div class="modal-body">
-        <input class="form-control" type="text" placeholder="Token string"></input>
+        <div class="form-group">
+            <input class="form-control" type="text" id="utoken" placeholder="Token string">
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="ucookies" checked>
+          <label class="form-check-label" for="ucookies">Save to cookies</label>
+        </div>
       </div>
       <div class="modal-footer">
         <button type="submit" class="btn btn-primary">Submit</button>

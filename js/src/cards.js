@@ -268,6 +268,8 @@ function updateProgress() {
 
 // Show login dialog
 function userLogin() {
+  if (uid)
+    $('#utoken').val('#' + uid);
   $('#ulogin').modal();
 }
 
@@ -276,14 +278,39 @@ function updateUID(u) {
   updateProgress();
   $('#uid').text(uid);
   $('#ulogin').modal('hide');
+  if ($('#ucookies').is(':checked'))
+    setCookie('uid', u, 30);
+}
+
+function setCookie(cname, cvalue, exdays) {
+  var d = new Date();
+  d.setTime(d.getTime() + (exdays*24*60*60*1000));
+  var expires = "expires="+ d.toUTCString();
+  document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+}
+
+function getCookie(cname) {
+  var name = cname + "=";
+  var decodedCookie = decodeURIComponent(document.cookie);
+  var ca = decodedCookie.split(';');
+  for(var i = 0; i <ca.length; i++) {
+    var c = ca[i];
+    while (c.charAt(0) == ' ') {
+      c = c.substring(1);
+    }
+    if (c.indexOf(name) == 0) {
+      return c.substring(name.length, c.length);
+    }
+  }
+  return "";
 }
 
 // Login dialog
-$('#ulogin').on('shown.bs.modal', function() {$('#ulogin input').focus();});
+$('#ulogin').on('shown.bs.modal', function() {$('#utoken').focus();});
 
 // Login submit
 $('#ulogin .btn-primary').click(function() {
-  val = $('#ulogin input').val().trim();
+  val = $('#utoken').val().trim();
   if (!val) {
     alert('Please provide a token string as identifier');
     return;
@@ -292,8 +319,14 @@ $('#ulogin .btn-primary').click(function() {
     // Hashed user ID
     updateUID(val.slice(1));
   else
-    $.post('get/hash.php', $('#ulogin input').val(), updateUID);
+    $.post('get/hash.php', $('#utoken').val(), updateUID);
 });
 
+// User ID label
+$('#uid').on('click', userLogin);
+
+uid=getCookie("uid");
 if (!uid)
   userLogin();
+else
+  updateUID(uid);
