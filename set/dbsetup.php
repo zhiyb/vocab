@@ -3,9 +3,10 @@ require '../dbconf.php';
 $db = new mysqli($dbhost, $dbuser, $dbpw);
 if ($db->connect_error)
     die("Connection failed: " . $db->connect_error . "\n");
+$db->set_charset('utf8mb4');
 
 function createDatabase($dbname) {
-    $stat = $GLOBALS['db']->query("CREATE DATABASE IF NOT EXISTS " . $dbname . " CHARACTER SET = utf8 COLLATE utf8_bin");
+    $stat = $GLOBALS['db']->query("CREATE DATABASE IF NOT EXISTS " . $dbname . " CHARACTER SET = utf8mb4 COLLATE utf8mb4_unicode_ci");
     if ($stat === TRUE)
         echo "Database " . $dbname . " created\n";
     else
@@ -21,7 +22,7 @@ if ($db->query("CREATE TABLE IF NOT EXISTS info (
     sid INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     name TINYTEXT NOT NULL,
     style TEXT, weight TEXT)
-    CHARACTER SET = utf8 COLLATE utf8_bin") !== TRUE)
+    CHARACTER SET = utf8mb4 COLLATE utf8mb4_unicode_ci") !== TRUE)
     die("Error creating table " . $dbname . "->info: " . $db->error . "\n");
 
 if ($db->query("CREATE TABLE IF NOT EXISTS `words` (
@@ -33,7 +34,7 @@ if ($db->query("CREATE TABLE IF NOT EXISTS `words` (
     PRIMARY KEY (`id`),
     UNIQUE (`sid`, `id`),
     FOREIGN KEY (`sid`) REFERENCES `info`(`sid`) ON DELETE CASCADE ON UPDATE CASCADE
-    ) CHARACTER SET = utf8 COLLATE utf8_bin") !== TRUE)
+    ) CHARACTER SET = utf8mb4 COLLATE utf8mb4_unicode_ci") !== TRUE)
     die("Error creating table " . $dbname . "->info: " . $db->error . "\n");
 
 if ($db->query("CREATE TABLE IF NOT EXISTS `user` (
@@ -45,6 +46,6 @@ if ($db->query("CREATE TABLE IF NOT EXISTS `user` (
     `time` TIMESTAMP,
     PRIMARY KEY (`uid`, `id`),
     FOREIGN KEY (`id`) REFERENCES `words`(`id`) ON DELETE CASCADE ON UPDATE CASCADE
-    ) CHARACTER SET = utf8 COLLATE utf8_bin") !== TRUE)
+    ) CHARACTER SET = utf8mb4 COLLATE utf8mb4_unicode_ci") !== TRUE)
     die("Error creating table " . $dbname . "->user: " . $db->error . "\n");
 ?>

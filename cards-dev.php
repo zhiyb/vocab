@@ -5,7 +5,7 @@ require 'dbconf.php';
 $db = new mysqli($dbhost, $dbuser, $dbpw, $dbname);
 if ($db->connect_error)
     die("Connection failed: " . $db->connect_error . "\n");
-$db->query('SET CHARACTER SET utf8');
+$db->set_charset('utf8mb4');
 ?><!DOCTYPE html>
 <html>
 <head>

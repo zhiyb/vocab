@@ -7,7 +7,7 @@ require '../dbconf.php';
 $db = new mysqli($dbhost, $dbuser, $dbpw, $dbname);
 if ($db->connect_error)
     die("Connection failed: " . $db->connect_error . "\n");
-$db->query('SET CHARACTER SET utf8');
+$db->set_charset('utf8mb4');
 
 $stmt = $db->prepare('SELECT DISTINCT `unit` FROM `words` WHERE `sid` = ? ORDER BY LOWER(`unit`)');
 if ($stmt == false)

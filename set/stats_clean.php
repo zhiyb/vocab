@@ -14,14 +14,14 @@ require '../dbconf.php';
 $db = new mysqli($dbhost, $dbuser, $dbpw, $dbname);
 if ($db->connect_error)
     die("Connection failed: " . $db->connect_error . "\n");
-$db->query('SET CHARACTER SET utf8');
+$db->set_charset('utf8mb4');
 
 // Create temporary table for section & unit pairs
 if ($db->query('CREATE TEMPORARY TABLE IF NOT EXISTS `sel` (
         `sid` INT UNSIGNED NOT NULL,
         `unit` VARCHAR(32) NOT NULL,
         PRIMARY KEY (`sid`, `unit`)
-    ) CHARACTER SET = utf8 COLLATE utf8_bin') !== true)
+    ) CHARACTER SET = utf8mb4 COLLATE utf8mb4_unicode_ci') !== true)
     die($db->error);
 
 // Insert section & unit pairs
