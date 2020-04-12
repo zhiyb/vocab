@@ -8,10 +8,11 @@ if ($uid == null) {
 }
 
 $data = null;
-if ($_SERVER["REQUEST_METHOD"] == "POST")
+$post = $_SERVER["REQUEST_METHOD"] == "POST";
+if ($post)
     $data = file_get_contents("php://input");
 
-if ($index == null && $data == null) {
+if ($index == null && !$post) {
     http_response_code(400);
     die();
 }
@@ -33,7 +34,7 @@ if ($index != null) {
     }
 }
 
-if ($data != null) {
+if ($post) {
     $stmt = $db->prepare("INSERT INTO `session` (`uid`, `data`) VALUES (UNHEX(?), ?) ON DUPLICATE KEY UPDATE `data` = VALUES(`data`)");
     $stmt->bind_param('ss', $uid, $data);
     if ($stmt->execute() !== true) {

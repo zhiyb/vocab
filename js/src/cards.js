@@ -21,18 +21,26 @@ function reduce(s)
 
 function sessionSave()
 {
-  $.post('set/session_update.php?uid=' + uid + '&index=' + index, JSON.stringify(words));
+  // Clear session data at the end
+  if (index >= words.length)
+    $.post('set/session_update.php?uid=' + uid);
+  else
+    $.post('set/session_update.php?uid=' + uid + '&index=' + index, JSON.stringify(words));
 }
 
 function sessionUpdate()
 {
-  $.get('set/session_update.php?uid=' + uid + '&index=' + index);
+  // Clear session data at the end
+  if (index >= words.length)
+    $.post('set/session_update.php?uid=' + uid);
+  else
+    $.get('set/session_update.php?uid=' + uid + '&index=' + index);
 }
 
 function sessionRestore()
 {
   $.getJSON('get/session.php?uid=' + uid, function (obj) {
-    if (obj == null || obj.data == null)
+    if (obj == null || obj.data == null || obj.data === '')
       return;
     try {
       obj.data = JSON.parse(obj.data);
