@@ -90,7 +90,6 @@ echo json_encode($sections);
 <div class="col-sm"><button class="btn btn-secondary btn-lg btn-block">Back</button></div>
 </div>
 </div>
-<div id="words" style="display:none"><ul class="list-group"></ul></div>
 
 <!-- Word copying modal dialog -->
 <div id="word_copy" class="modal fade" role="dialog">

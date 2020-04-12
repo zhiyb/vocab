@@ -2,6 +2,7 @@ var uid = null;
 var index = 0;
 var hide = true;
 var words = [];
+var word = [];
 var section = 0;
 var unit = '';
 var text = '', annot = '';
@@ -18,23 +19,14 @@ function reduce(s)
     .replace(/\s/g, '');
 }
 
-function start(ws)
+function start(ids)
 {
   index = 0;
-  words = ws;
+  words = ids;
   update();
 
-  // Word list
-  var html = '';
-  var i;
-  for (i in words) {
-    var word = words[i];
-    html = html.concat('<li class="list-group-item">#' + word.id
-        + ' ' + word.word + ' | ' + word.unit + ' #' + word.sid + '</li>');
-  }
-  $('div#words > ul').html(html);
-
   // Hide unit selection, show word card
+  $('div#card > ul').html("<h1>Loading, please wait...</h1>");
   $('div#card').show(ani);
   $('div#sections').hide(ani);
   $("html, body").animate({scrollTop: 0}, "slow");
@@ -56,31 +48,27 @@ function update()
     back();
     return;
   }
-  var word = words[index];
-  var obj = {id: word.id, sid: word.sid};
-  $.post('get/stats.php?uid=' + uid, JSON.stringify(obj), function(ret) {
+
+  id = words[index];
+  $.getJSON('get/word_stats.php?uid=' + uid + '&id=' + id, function(obj) {
+    word = obj;
+    updateButtons(word);
+
+    // Section info
+    section = word.sid;
     try {
-      updateButtons(JSON.parse(ret));
+      style = JSON.parse(sections[word.sid].style);
+      if (style == null)
+        style = {};
     } catch (e) {
-      alert(e);
-    }
-  });
-
-  // Section info
-  section = word.sid;
-  unit = word.unit;
-  try {
-    style = JSON.parse(sections[word.sid].style);
-    if (style == null)
       style = {};
-  } catch (e) {
-    style = {};
-  }
+    }
 
-  show(true);
-  pass = false;
-  $('#test').val('');
-  $('#test').trigger('change');
+    show(true);
+    pass = false;
+    $('#test').val('');
+    $('#test').trigger('change');
+  });
 }
 
 function updateButtons(stats)
@@ -99,14 +87,8 @@ function submit(type)
     back();
     return;
   }
-  var word = words[index];
-  var obj = {id: word.id, sid: word.sid, field: type};
-  $.post('set/stats_increment.php?uid=' + uid, JSON.stringify(obj), function(ret) {
-    try {
-      updateButtons(JSON.parse(ret));
-    } catch (e) {
-      alert(e);
-    }
+  $.getJSON('set/stats_increment.php?uid=' + uid + '&id=' + words[index] + '&field=' + type, function(obj) {
+    updateButtons(obj);
     index++;
     update();
   });
@@ -121,7 +103,6 @@ function show(h)
   var bar = $('div#card .progress > .bg-info');
   bar.text((index + 1) + '/' + words.length);
   bar.css('width', ((index + 1) * 100 / words.length) + '%');
-  var word = words[index];
   $('div#card > ul').html(wordElement(word, h));
   hide = h;
   var html = disp(word.word);

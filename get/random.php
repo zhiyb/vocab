@@ -36,14 +36,16 @@ foreach ($secs as $sec) {
 }
 
 // Enumerate words
-$stmt = $db->prepare('SELECT `words`.`id`, `sid`, `unit`, `word`, `info`, '
-    . $algo .  ' AS `weight` FROM (SELECT * FROM `user` WHERE `uid` = UNHEX(?)) AS `user` RIGHT JOIN (
-        SELECT `id`, `words`.`sid`, `words`.`unit`, `word`, `info` FROM `words`
+$stmt = $db->prepare('SELECT `words`.`id` AS `id` FROM
+    (SELECT * FROM `user` WHERE `uid` = UNHEX(?)) AS `user` RIGHT JOIN (
+        SELECT `id`, `words`.`sid`, `words`.`unit` FROM `words`
         RIGHT JOIN `sel` ON `words`.`sid` = `sel`.`sid` AND `words`.`unit` = `sel`.`unit`
-    ) AS `words` ON `user`.`id` = `words`.`id` ORDER BY `weight`, RAND()');
-if ($stmt == false)
-    die($db->error);
+    ) AS `words` ON `user`.`id` = `words`.`id` ORDER BY ' . $algo .  ', RAND()');
 $stmt->bind_param('s', $uid);
 $stmt->execute();
-echo json_encode($stmt->get_result()->fetch_all(MYSQLI_ASSOC));
+
+$ids = [];
+foreach ($stmt->get_result()->fetch_all(MYSQLI_NUM) as $entry)
+    array_push($ids, $entry[0]);
+echo json_encode($ids);
 ?>
