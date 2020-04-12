@@ -16,8 +16,8 @@ function refreshWords(unit)
 
 function refreshWord(item)
 {
-  $.getJSON('get/word.php?sid=' + section + '&id=' + item.attr('wid'), function(word) {
-    if (word == null) {
+  $.getJSON('get/word.php?sid=' + section + '&id=' + item.attr('wid'), function(obj) {
+    if (obj == null) {
       item.hide(ani, item.remove);
       return;
     }
@@ -25,9 +25,9 @@ function refreshWord(item)
     var h = false;
     if (typeof hide !== 'undefined')
       h = hide;
-    item.replaceWith(wordElement(word, h));
-    if (typeof words !== 'undefined')
-      words[index] = word;
+    item.replaceWith(wordElement(obj, h));
+    if (typeof word !== 'undefined')
+      word = obj;
   });
 }
 

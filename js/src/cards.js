@@ -8,6 +8,7 @@ var unit = '';
 var text = '', annot = '';
 var pass = false;
 var progress = [];
+var pbar = {'total': 0, 'new': 0, 'pass': 0, 'fail': 0};
 
 function reduce(s)
 {
@@ -25,7 +26,7 @@ function sessionSave()
   if (index >= words.length)
     $.post('set/session_update.php?uid=' + uid);
   else
-    $.post('set/session_update.php?uid=' + uid + '&index=' + index, JSON.stringify(words));
+    $.post('set/session_update.php?uid=' + uid + '&index=' + index, JSON.stringify({pbar: pbar, words: words}));
 }
 
 function sessionUpdate()
@@ -44,8 +45,10 @@ function sessionRestore()
       return;
     try {
       obj.data = JSON.parse(obj.data);
-      if (obj.data != null)
-        start(obj.index, obj.data);
+      if (obj.data != null) {
+        pbar = obj.data.pbar;
+        start(obj.index, obj.data.words);
+      }
     } catch (e) {
       alert(e);
     }
@@ -57,6 +60,12 @@ function start(idx, ids)
   index = idx;
   words = ids;
   update();
+
+  // Update progress bar
+  var pg = $('div#card .progress');
+  pg.children('.bg-secondary').css('width', 100 * pbar['new'] / pbar.total + '%');
+  pg.children('.bg-danger').css('width', 100 * pbar.fail / pbar.total + '%');
+  pg.children('.bg-warning').css('width', 100 * (pbar.total - pbar['new'] - pbar.pass - pbar.fail) / pbar.total + '%');
 
   // Hide unit selection, show word card
   $('div#card > ul').html("<h1>Loading, please wait...</h1>");
@@ -178,24 +187,20 @@ $('button#submit').click(function() {
     $.post('get/random.php?uid=' + uid, JSON.stringify(secs), function(ret) {
       try {
         var obj = JSON.parse(ret);
-        start(0, obj);
-        sessionSave();
         // Calculate progress bars
-        var po = {'total': 0, 'new': 0, 'pass': 0, 'fail': 0};
+        pbar = {'total': 0, 'new': 0, 'pass': 0, 'fail': 0};
         for (i in secs) {
           var sec = secs[i];
           for (j in sec.units) {
             var p = progress.filter(function(a) {return a.sid == sec.sid && a.unit == sec.units[j].unit})[0];
-            po.total += p.total;
-            po['new'] += p['new'];
-            po.pass += p.pass;
-            po.fail += p.fail;
+            pbar.total += p.total;
+            pbar['new'] += p['new'];
+            pbar.pass += p.pass;
+            pbar.fail += p.fail;
           }
         }
-        var pg = $('div#card .progress');
-        pg.children('.bg-secondary').css('width', 100 * po['new'] / po.total + '%');
-        pg.children('.bg-danger').css('width', 100 * po.fail / po.total + '%');
-        pg.children('.bg-warning').css('width', 100 * (po.total - po['new'] - po.pass - po.fail) / po.total + '%');
+        start(0, obj);
+        sessionSave();
       } catch (e) {
         alert(e + ":\n" + ret);
       }

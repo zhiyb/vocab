@@ -75,7 +75,7 @@ echo json_encode($sections);
 
 <div id="card" style="display:none">
 <div class="progress bg-success" style="height:24px;position:relative">
-<div class="progress-bar progress-bar-striped progress-bar-animated bg-info text-dark" role="progressbar" style="width:10%;height:100%;position:absolute">768/2048</div>
+<div class="progress-bar progress-bar-striped progress-bar-animated bg-info text-dark" role="progressbar" style="width:100%;height:100%;position:absolute">39/39</div>
 <div class="progress-bar bg-secondary" role="progressbar" style="width:25%"></div>
 <div class="progress-bar bg-danger" role="progressbar" style="width:25%"></div>
 <div class="progress-bar bg-warning" role="progressbar" style="width:25%"></div>
