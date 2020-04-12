@@ -21,6 +21,14 @@ if ($db->connect_error) {
 }
 $db->set_charset('utf8mb4');
 
+// Create user session if not exists
+$stmt = $db->prepare("INSERT IGNORE INTO `session` (`uid`) VALUES (UNHEX(?))");
+$stmt->bind_param('s', $uid);
+if ($stmt->execute() !== true) {
+    http_response_code(500);
+    die($stmt->error);
+}
+
 $stmt = $db->prepare("INSERT INTO `user` (`uid`, `id`, `$field`) VALUES (UNHEX(?), ?, 1) ON DUPLICATE KEY UPDATE `$field` = `$field` + 1");
 $stmt->bind_param('si', $uid, $id);
 if ($stmt->execute() !== true) {

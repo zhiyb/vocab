@@ -37,6 +37,15 @@ if ($db->query("CREATE TABLE IF NOT EXISTS `words` (
     ) CHARACTER SET = utf8mb4 COLLATE utf8mb4_unicode_ci") !== TRUE)
     die("Error creating table " . $dbname . "->info: " . $db->error . "\n");
 
+if ($db->query("CREATE TABLE IF NOT EXISTS `session` (
+    `uid` BINARY(16) NOT NULL,
+    `index` INT UNSIGNED NOT NULL DEFAULT 0,
+    `data` TEXT NULL,
+    `time` TIMESTAMP,
+    PRIMARY KEY (`uid`)
+    ) CHARACTER SET = utf8mb4 COLLATE utf8mb4_unicode_ci") !== TRUE)
+    die("Error creating table " . $dbname . "->user: " . $db->error . "\n");
+
 if ($db->query("CREATE TABLE IF NOT EXISTS `user` (
     `uid` BINARY(16) NOT NULL,
     `id` INT UNSIGNED NOT NULL,
@@ -45,6 +54,7 @@ if ($db->query("CREATE TABLE IF NOT EXISTS `user` (
     `no` INT UNSIGNED NOT NULL DEFAULT 0,
     `time` TIMESTAMP,
     PRIMARY KEY (`uid`, `id`),
+    FOREIGN KEY (`uid`) REFERENCES `session`(`uid`) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (`id`) REFERENCES `words`(`id`) ON DELETE CASCADE ON UPDATE CASCADE
     ) CHARACTER SET = utf8mb4 COLLATE utf8mb4_unicode_ci") !== TRUE)
     die("Error creating table " . $dbname . "->user: " . $db->error . "\n");

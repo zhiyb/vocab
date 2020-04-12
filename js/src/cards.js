@@ -19,9 +19,34 @@ function reduce(s)
     .replace(/\s/g, '');
 }
 
-function start(ids)
+function sessionSave()
 {
-  index = 0;
+  $.post('set/session_update.php?uid=' + uid + '&index=' + index, JSON.stringify(words));
+}
+
+function sessionUpdate()
+{
+  $.get('set/session_update.php?uid=' + uid + '&index=' + index);
+}
+
+function sessionRestore()
+{
+  $.getJSON('get/session.php?uid=' + uid, function (obj) {
+    if (obj == null || obj.data == null)
+      return;
+    try {
+      obj.data = JSON.parse(obj.data);
+      if (obj.data != null)
+        start(obj.index, obj.data);
+    } catch (e) {
+      alert(e);
+    }
+  });
+}
+
+function start(idx, ids)
+{
+  index = idx;
   words = ids;
   update();
 
@@ -91,6 +116,7 @@ function submit(type)
     updateButtons(obj);
     index++;
     update();
+    sessionUpdate();
   });
 }
 
@@ -144,7 +170,8 @@ $('button#submit').click(function() {
     $.post('get/random.php?uid=' + uid, JSON.stringify(secs), function(ret) {
       try {
         var obj = JSON.parse(ret);
-        start(obj);
+        start(0, obj);
+        sessionSave();
         // Calculate progress bars
         var po = {'total': 0, 'new': 0, 'pass': 0, 'fail': 0};
         for (i in secs) {
@@ -261,6 +288,7 @@ function updateUID(u) {
   $('#ulogin').modal('hide');
   if ($('#ucookies').is(':checked'))
     setCookie('uid', u, 30);
+  sessionRestore();
 }
 
 function setCookie(cname, cvalue, exdays) {
