@@ -13,12 +13,12 @@ if ($db->connect_error)
 $db->set_charset('utf8mb4');
 
 $stmt = $db->prepare('SELECT *, `words`.`id` AS `id` FROM (SELECT * FROM `words` WHERE `id` = ?) AS `words`
-    LEFT JOIN `user` ON `user`.`uid` = UNHEX(?) AND `user`.`id` = ? AND `user`.`id` = `words`.`id`');
+    LEFT JOIN `user` ON `user`.`uid` = UNHEX(?) AND `user`.`id` = `words`.`id`');
 if ($stmt == false) {
     http_response_code(500);
     die($db->error);
 }
-$stmt->bind_param('isi', $id, $uid, $id);
+$stmt->bind_param('is', $id, $uid);
 if ($stmt->execute() !== true) {
     http_response_code(500);
     die($stmt->error);
