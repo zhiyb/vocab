@@ -15,4 +15,6 @@ js css:
 
 .PHONY: clean
 clean:
+	$(MAKE) -C js clean
+	$(MAKE) -C css clean
 	rm -f $(HTML)

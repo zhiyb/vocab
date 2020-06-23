@@ -82,11 +82,14 @@ echo json_encode($sections);
 </div><p>
 <ul class="list-group word_list"></ul><p>
 <div><textarea class="form-control" type="text" rows="1" id="test"></textarea></div><p>
+<div class="input-group">
+<div class="input-group-prepend"><div class="input-group-text" style="background:red"><span class="fa fa-times"></span></div></div>
+<input type="range" min="0" max="100" value="50" class="form-control slider" id="slider">
+<div class="input-group-append"><div class="input-group-text" style="background:lime"><span class="fa fa-check"></span></div></div>
+</div><p>
 <div class="row" id="buttons">
 <div class="col-sm"><button class="btn btn-primary btn-lg btn-block">Show</button></div>
-<div class="col-sm"><button class="btn btn-success btn-lg btn-block">Yes</button></div>
 <div class="col-sm"><button class="btn btn-warning btn-lg btn-block">Skip</button></div>
-<div class="col-sm"><button class="btn btn-danger btn-lg btn-block">No</button></div>
 <div class="col-sm"><button class="btn btn-secondary btn-lg btn-block">Back</button></div>
 </div>
 </div>

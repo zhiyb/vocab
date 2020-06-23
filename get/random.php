@@ -10,7 +10,6 @@ $secs = json_decode(file_get_contents("php://input"), true);
 if ($secs == null)
     die('POST data not found');
 
-require 'algorithm.php';
 require '../dbconf.php';
 $db = new mysqli($dbhost, $dbuser, $dbpw, $dbname);
 if ($db->connect_error)
@@ -40,7 +39,7 @@ $stmt = $db->prepare('SELECT `words`.`id` AS `id` FROM
     (SELECT * FROM `user` WHERE `uid` = UNHEX(?)) AS `user` RIGHT JOIN (
         SELECT `id`, `words`.`sid`, `words`.`unit` FROM `words`
         RIGHT JOIN `sel` ON `words`.`sid` = `sel`.`sid` AND `words`.`unit` = `sel`.`unit`
-    ) AS `words` ON `user`.`id` = `words`.`id` ORDER BY ' . $algo .  ', RAND()');
+    ) AS `words` ON `user`.`id` = `words`.`id` ORDER BY LEAST(`skip`, 0), `weight`, RAND()');
 $stmt->bind_param('s', $uid);
 $stmt->execute();
 

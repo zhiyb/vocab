@@ -9,6 +9,10 @@ var text = '', annot = '';
 var pass = false;
 var progress = [];
 var pbar = {'total': 0, 'new': 0, 'pass': 0, 'fail': 0};
+var maxweight = 5;    // Maximum absolute weight value
+var scale = 2;        // Slider value between [-scale, scale]
+var weight = 0;
+var origin = 0;
 
 function reduce(s)
 {
@@ -116,25 +120,41 @@ function update()
 function updateButtons(stats)
 {
   if (!stats)
-    stats = {yes: 0, skip: 0, no: 0};
+    stats = {skip: 0, weight: 0};
+  weight = stats.weight;
+
+  origin = Math.max(Math.min(stats.weight, maxweight - scale), -maxweight + scale);
+  var sscale = 50 / scale;
+  var yellow = 50;    // Weight 0 centre at 50%
+  yellow -= sscale * origin;
+  var red = yellow - maxweight * sscale;
+  var green = yellow + maxweight * sscale;
+  $('#slider').val(50 + (stats.weight - origin) * sscale);
+  $('#slider').css("background", "linear-gradient(to right, red " + red + "%, yellow " + yellow + "%, lime " + green + "%)");
+
   var num = function(i) {return i ? ' (' + i + ')' : '';};
-  $('#buttons .btn-success').text('Yes' + num(stats.yes));
   $('#buttons .btn-warning').text('Skip' + num(stats.skip));
-  $('#buttons .btn-danger').text('No' + num(stats.no));
 }
 
-function submit(type)
+function submit(skip, weight)
 {
   if (index >= words.length) {
     back();
     return;
   }
-  $.getJSON('set/stats_increment.php?uid=' + uid + '&id=' + words[index] + '&field=' + type, function(obj) {
+  weight = Math.max(Math.min(weight, maxweight), -maxweight);
+  $.getJSON('set/stats_update.php?uid=' + uid + '&id=' + words[index] + '&skip=' + skip + '&weight=' + weight, function(obj) {
+    console.log(obj);
     updateButtons(obj);
     index++;
     update();
     sessionUpdate();
   });
+}
+
+function submitSlider()
+{
+  submit(false, ($("#slider").val() - 50) / 50 * scale + origin);
 }
 
 function show(h)
@@ -255,20 +275,21 @@ $('#test').on('keyup', function(e) {
   if (e.which == 13) {
     if (s === text || s === annot) {
       if (pass)
-        submit('yes');
+        submit(false, weight + 1);
       else
-        submit('skip');
+        submit(true, weight - 1);
     } else if (e.shiftKey) {
-      submit('no');
+      submit(false, weight - 2);
     }
   }
 });
 
+// Progress bar
+$('#slider').on('change', submitSlider);
+
 // Control buttons
 $('#buttons .btn-primary').click(function() {show(!hide);});
-$('#buttons .btn-success').click(function() {submit('yes');});
-$('#buttons .btn-warning').click(function() {submit('skip');});
-$('#buttons .btn-danger').click(function() {submit('no');});
+$('#buttons .btn-warning').click(function() {submit(true, weight - 1);});
 $('#buttons .btn-secondary').click(back);
 
 // Update progress

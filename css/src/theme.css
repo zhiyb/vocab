@@ -108,6 +108,29 @@ td {
   margin-bottom: 0px;
 }
 
+.slider {
+  -webkit-appearance: none;
+  background: linear-gradient(to right, red 0%, orange 50%, lime 100%);
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 35px;
+  height: 35px;
+  border-radius: 50%; 
+  background: dimgray;
+  cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  background: dimgray;
+  cursor: pointer;
+}
+
 ruby {
   ruby-align: center;
 }

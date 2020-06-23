@@ -3,7 +3,6 @@ $uid = $_GET['uid'];
 if ($uid == null)
     die('UID required');
 
-require 'algorithm.php';
 require '../dbconf.php';
 $db = new mysqli($dbhost, $dbuser, $dbpw, $dbname);
 if ($db->connect_error)
@@ -12,10 +11,9 @@ $db->set_charset('utf8mb4');
 
 // User stats
 $stmt = $db->prepare('SELECT `sid`, `unit`, CAST(SUM(1) AS UNSIGNED) AS `total`, CAST(SUM(`new`) AS UNSIGNED) AS `new`,
-    CAST(SUM(`weight` > 0) AS UNSIGNED) AS `pass`, CAST(SUM(`weight` < 0) AS UNSIGNED) AS `fail` FROM (
-    SELECT `sid`, `unit`, (`yes` IS NULL) AS `new`,
-        COALESCE(' .$algo . ', 0) AS `weight` FROM (
-            SELECT `user`.`id`, `sid`, `unit`, `yes`, `skip`, `no`, `time` FROM `words`
+    CAST(SUM(`weight` >= 1) AS UNSIGNED) AS `pass`, CAST(SUM(`weight` <= -1) AS UNSIGNED) AS `fail` FROM (
+        SELECT `sid`, `unit`, (`weight` IS NULL) AS `new`, `weight` FROM (
+            SELECT `user`.`id`, `sid`, `unit`, `weight`, `time` FROM `words`
             LEFT JOIN (SELECT * FROM `user` WHERE `uid` = UNHEX(?)) AS `user` ON `words`.`id` = `user`.`id`
         ) AS `res`
     ) AS `res` GROUP BY `sid`, `unit` ORDER BY `sid`, LOWER(`unit`)');

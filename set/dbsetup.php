@@ -49,9 +49,8 @@ if ($db->query("CREATE TABLE IF NOT EXISTS `session` (
 if ($db->query("CREATE TABLE IF NOT EXISTS `user` (
     `uid` BINARY(16) NOT NULL,
     `id` INT UNSIGNED NOT NULL,
-    `yes` INT UNSIGNED NOT NULL DEFAULT 0,
-    `skip` INT UNSIGNED NOT NULL DEFAULT 0,
-    `no` INT UNSIGNED NOT NULL DEFAULT 0,
+    `skip` INT NOT NULL DEFAULT 0,
+    `weight` FLOAT NOT NULL DEFAULT 0,
     `time` TIMESTAMP,
     PRIMARY KEY (`uid`, `id`),
     FOREIGN KEY (`uid`) REFERENCES `session`(`uid`) ON DELETE CASCADE ON UPDATE CASCADE,

@@ -1,17 +1,16 @@
 <?php
 $uid = $_GET['uid'];
 $id = $_GET['id'];
-$field = $_GET['field'];
+$skip = $_GET['skip'];
+$weight = $_GET['weight'];
 
-if ($uid == null || $id == null) {
+if ($uid == null || $id == null || !is_numeric($weight)) {
     http_response_code(400);
     die();
 }
 
-if ($field != 'yes' && $field != 'skip' && $field != 'no') {
-    http_response_code(400);
-    die();
-}
+$skip = filter_var($skip, FILTER_VALIDATE_BOOLEAN);
+$weight = (float)$weight;
 
 require '../dbconf.php';
 $db = new mysqli($dbhost, $dbuser, $dbpw, $dbname);
@@ -29,8 +28,15 @@ if ($stmt->execute() !== true) {
     die($stmt->error);
 }
 
-$stmt = $db->prepare("INSERT INTO `user` (`uid`, `id`, `$field`) VALUES (UNHEX(?), ?, 1) ON DUPLICATE KEY UPDATE `$field` = `$field` + 1");
-$stmt->bind_param('si', $uid, $id);
+if ($skip) {
+    $stmt = $db->prepare("INSERT INTO `user` (`uid`, `id`, `weight`, `skip`) VALUES (UNHEX(?), ?, ?, -1) ON DUPLICATE KEY UPDATE
+        `weight` = VALUES(`weight`), `skip` = CASE WHEN `skip` < 0 THEN `skip` - 1 ELSE `skip` + 1 END");
+    $stmt->bind_param('sid', $uid, $id, $weight);
+} else {
+    $stmt = $db->prepare("INSERT INTO `user` (`uid`, `id`, `weight`, `skip`) VALUES (UNHEX(?), ?, ?, ABS(`skip`)) ON DUPLICATE KEY UPDATE
+        `weight` = VALUES(`weight`), `skip` = ABS(`skip`)");
+    $stmt->bind_param('sid', $uid, $id, $weight);
+}
 if ($stmt->execute() !== true) {
     http_response_code(500);
     die($stmt->error);
