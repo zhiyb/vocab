@@ -13,6 +13,7 @@ var maxweight = 5;    // Maximum absolute weight value
 var scale = 2;        // Slider value between [-scale, scale]
 var weight = 0;
 var origin = 0;
+var submitting = false;
 
 function reduce(s)
 {
@@ -142,6 +143,9 @@ function submit(skip, weight)
     back();
     return;
   }
+  if (submitting)
+    return;
+  submitting = true;
   weight = Math.max(Math.min(weight, maxweight), -maxweight);
   $.getJSON('set/stats_update.php?uid=' + uid + '&id=' + words[index] + '&skip=' + skip + '&weight=' + weight, function(obj) {
     console.log(obj);
@@ -149,6 +153,7 @@ function submit(skip, weight)
     index++;
     update();
     sessionUpdate();
+    submitting = false;
   });
 }
 
@@ -285,7 +290,9 @@ $('#test').on('keyup', function(e) {
 });
 
 // Progress bar
-$('#slider').on('change', submitSlider);
+$('#slider').on('mouseup', submitSlider);
+$('#slider').on('touchend', submitSlider);
+//$('#slider').on('change', submitSlider);
 
 // Control buttons
 $('#buttons .btn-primary').click(function() {show(!hide);});
