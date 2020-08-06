@@ -19,7 +19,7 @@ function reduce(s)
 {
   return s.replace(/^(.+)[(\[{「［（｛](.+)[-~―－‐＿～][)\]}」］）｝]/gm, function(m0, m1, m2) {return m2 + m1;})
     .replace(/[\s()\[\]{}\-_/\\~,.;:?]/g, ' ')
-    .replace(/[―－‐＿　／・～、。；：？「」［］（）｛｝＊]/g, ' ')
+    .replace(/[―－‐＿　／・～、。；：？「」［］（）｛｝＊…]/g, ' ')
     .replace(/(?:^|\s)([^\s]+)\s+([^\s]*?\1)/, function(m0, m1, m2) {return m2;})
     .replace(/(([^\s]+)[^\s]*?)\s+\2(?:$|\s)/, function(m0, m1) {return m1;})
     .replace(/\s/g, '');
